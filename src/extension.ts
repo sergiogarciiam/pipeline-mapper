@@ -1,26 +1,89 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import * as YAML from "yaml";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  console.log(
+    'Congratulations, your extension "pipeline-mapper" is now active!'
+  );
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "pipeline-mapper" is now active!');
+  const disposable = vscode.commands.registerCommand(
+    "pipeline-mapper.showPipelineMapper",
+    () => {
+      const editor = vscode.window.activeTextEditor;
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('pipeline-mapper.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Pipeline Mapper!');
-	});
+      if (!editor) {
+        vscode.window.showErrorMessage("No active editor found");
+        return;
+      }
 
-	context.subscriptions.push(disposable);
+      if (!editor.document.fileName.endsWith("gitlab.yml")) {
+        vscode.window.showErrorMessage(
+          "This extension only works with gitlab.yml files"
+        );
+        return;
+      }
+
+      const fileContent = editor.document.getText();
+
+      const panel = vscode.window.createWebviewPanel(
+        "pipelineMapper",
+        "Pipeline Mapper",
+        vscode.ViewColumn.One,
+        {
+          enableScripts: true,
+        }
+      );
+
+      // And set its HTML content
+      panel.webview.html = getWebviewContent(context, panel, fileContent);
+    }
+  );
+
+  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
+function getWebviewContent(
+  context: vscode.ExtensionContext,
+  panel: vscode.WebviewPanel,
+  fileContent: string
+): string {
+  const jsonContent = YAML.parse(fileContent);
+
+  const scriptSrc = panel.webview.asWebviewUri(
+    vscode.Uri.joinPath(
+      context.extensionUri,
+      "web",
+      "dist",
+      "assets",
+      "index-DZCcvyZ8.js"
+    )
+  );
+
+  const cssSrc = panel.webview.asWebviewUri(
+    vscode.Uri.joinPath(
+      context.extensionUri,
+      "web",
+      "dist",
+      "assets",
+      "index-DryrGl7y.css"
+    )
+  );
+
+  return `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <link rel="stylesheet" href="${cssSrc}" />
+          </head>
+										<script>
+              window.pipelineData = ${JSON.stringify(jsonContent)};
+          </script>
+          <body>
+            <noscript>You need to enable JavaScript to run this app.</noscript>
+            <div id="root"></div>
+            <script src="${scriptSrc}"></script>
+          </body>
+        </html>
+        `;
+}
+
 export function deactivate() {}
