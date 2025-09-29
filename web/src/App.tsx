@@ -1,70 +1,67 @@
 import {
   VSCodeButton,
-  VSCodeDataGrid,
-  VSCodeDataGridRow,
-  VSCodeDataGridCell,
-  VSCodeTextField,
   VSCodeProgressRing,
 } from "@vscode/webview-ui-toolkit/react";
+import { EXAMPLE } from "./utils/constants";
+import { useEffect, useRef, useState } from "react";
+import type { Job, PipelineData } from "./utils/types";
+import ArrowsCanvas from "./components/arrowsCanvas";
+import StageColumn from "./components/stageColumn";
 
 function App() {
-  const rowData = [
-    {
-      cell1: "Cell Data",
-      cell2: "Cell Data",
-      cell3: "Cell Data",
-      cell4: "Cell Data",
-    },
-    {
-      cell1: "Cell Data",
-      cell2: "Cell Data",
-      cell3: "Cell Data",
-      cell4: "Cell Data",
-    },
-    {
-      cell1: "Cell Data",
-      cell2: "Cell Data",
-      cell3: "Cell Data",
-      cell4: "Cell Data",
-    },
-  ];
-  const pipelineData = (window as any).pipelineData;
+  const pipelineData: PipelineData =
+    (window as { pipelineData?: PipelineData }).pipelineData || EXAMPLE;
+  const stages = [...(pipelineData?.stages || []), ""]; // Add empty stage for jobs without a defined stage
+  const [arrows, setArrows] = useState<Array<{ start: DOMRect; end: DOMRect }>>(
+    []
+  );
+  const [isShowArrows, setIsShowArrows] = useState(false);
+  const jobRefs = useRef<{ [key: string]: HTMLDivElement }>({});
+
+  useEffect(() => {
+    const newArrows: Array<{ start: DOMRect; end: DOMRect }> = [];
+
+    Object.entries(pipelineData).forEach(([jobId, jobData]) => {
+      const job = jobData as Job;
+      if (job?.needs && Array.isArray(job.needs)) {
+        job.needs.forEach((needId: string) => {
+          const startElement = jobRefs.current[needId];
+          const endElement = jobRefs.current[jobId];
+
+          if (startElement && endElement) {
+            newArrows.push({
+              start: startElement.getBoundingClientRect(),
+              end: endElement.getBoundingClientRect(),
+            });
+          }
+        });
+      }
+    });
+
+    setArrows(newArrows);
+  }, [pipelineData]);
 
   return (
-    <div className="grid gap-3 p-2 place-items-start">
-      <VSCodeDataGrid>
-        <VSCodeDataGridRow row-type="header">
-          <VSCodeDataGridCell cell-type="columnheader" grid-column="1">
-            A Custom Header Title
-          </VSCodeDataGridCell>
-          <VSCodeDataGridCell cell-type="columnheader" grid-column="2">
-            Another Custom Title
-          </VSCodeDataGridCell>
-          <VSCodeDataGridCell cell-type="columnheader" grid-column="3">
-            Title Is Custom
-          </VSCodeDataGridCell>
-          <VSCodeDataGridCell cell-type="columnheader" grid-column="4">
-            Custom Title
-          </VSCodeDataGridCell>
-        </VSCodeDataGridRow>
-        {rowData.map((row) => (
-          <VSCodeDataGridRow>
-            <VSCodeDataGridCell grid-column="1">{row.cell1}</VSCodeDataGridCell>
-            <VSCodeDataGridCell grid-column="2">{row.cell2}</VSCodeDataGridCell>
-            <VSCodeDataGridCell grid-column="3">{row.cell3}</VSCodeDataGridCell>
-            <VSCodeDataGridCell grid-column="4">{row.cell4}</VSCodeDataGridCell>
-          </VSCodeDataGridRow>
-        ))}
-      </VSCodeDataGrid>
+    <div style={{ position: "relative", padding: "20px" }}>
+      <VSCodeButton onClick={() => setIsShowArrows(!isShowArrows)}>
+        Show Dependencies
+      </VSCodeButton>
 
-      <span className="flex gap-3">
-        <VSCodeProgressRing />
-        <VSCodeTextField />
-        <VSCodeButton>Add</VSCodeButton>
-        <VSCodeButton appearance="secondary">Remove</VSCodeButton>
-      </span>
-      <div>
-        <pre>{JSON.stringify(pipelineData, null, 2)}</pre>
+      {isShowArrows && <ArrowsCanvas arrows={arrows} />}
+
+      <div style={{ display: "flex", gap: "50px" }}>
+        {stages.length > 0 ? (
+          stages.map((stage: string) => (
+            <StageColumn
+              key={stage}
+              stage={stage}
+              pipelineData={pipelineData}
+              jobRefs={jobRefs}
+            />
+          ))
+        ) : (
+          <VSCodeProgressRing />
+        )}
       </div>
     </div>
   );

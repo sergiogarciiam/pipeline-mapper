@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as YAML from "yaml";
+import * as fs from "fs";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log(
@@ -48,25 +49,27 @@ function getWebviewContent(
   fileContent: string
 ): string {
   const jsonContent = YAML.parse(fileContent);
+  const webDist = vscode.Uri.joinPath(
+    context.extensionUri,
+    "web",
+    "dist",
+    "assets"
+  );
+  const files = fs.readdirSync(webDist.fsPath);
+
+  const jsFile = files.find((file) => file.match(/^index-.*\.js$/));
+  const cssFile = files.find((file) => file.match(/^index-.*\.css$/));
+
+  if (!jsFile || !cssFile) {
+    throw new Error("Required assets not found");
+  }
 
   const scriptSrc = panel.webview.asWebviewUri(
-    vscode.Uri.joinPath(
-      context.extensionUri,
-      "web",
-      "dist",
-      "assets",
-      "index-DZCcvyZ8.js"
-    )
+    vscode.Uri.joinPath(context.extensionUri, "web", "dist", "assets", jsFile)
   );
 
   const cssSrc = panel.webview.asWebviewUri(
-    vscode.Uri.joinPath(
-      context.extensionUri,
-      "web",
-      "dist",
-      "assets",
-      "index-DryrGl7y.css"
-    )
+    vscode.Uri.joinPath(context.extensionUri, "web", "dist", "assets", cssFile)
   );
 
   return `<!DOCTYPE html>
