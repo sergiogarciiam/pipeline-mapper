@@ -35,7 +35,6 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
 
-      // And set its HTML content
       panel.webview.html = getWebviewContent(context, panel, fileContent);
     }
   );
@@ -49,6 +48,7 @@ function getWebviewContent(
   fileContent: string
 ): string {
   const jsonContent = YAML.parse(fileContent);
+
   const webDist = vscode.Uri.joinPath(
     context.extensionUri,
     "web",
@@ -83,6 +83,7 @@ function getWebviewContent(
           <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
             <div id="root"></div>
+            <div>${JSON.stringify(jsonContent)}</div>
             <script src="${scriptSrc}"></script>
           </body>
         </html>

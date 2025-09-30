@@ -1,29 +1,25 @@
 export const EXAMPLE = {
-  variables: {
-    APP_VERSION: "1.0.0",
-    NODE_VERSION: "16",
-  },
+  variables: { APP_VERSION: "1.0.0", NODE_VERSION: "16" },
   stages: ["prepare", "build", "test", "quality", "deploy"],
   install_dependencies: {
+    extends: [".a", ".b", ".c"],
     stage: "prepare",
     image: "node:${NODE_VERSION}",
-    cache: {
-      paths: ["node_modules/"],
-    },
+    cache: { paths: ["node_modules/"] },
     script: ["npm install"],
-    artifacts: {
-      paths: ["node_modules/"],
-    },
+    artifacts: { paths: ["node_modules/"] },
   },
   build_app: {
     stage: "build",
     image: "node:${NODE_VERSION}",
     needs: ["install_dependencies"],
     script: ["npm run build"],
-    artifacts: {
-      paths: ["dist/"],
-      expire_in: "1 week",
-    },
+    artifacts: { paths: ["dist/"], expire_in: "1 week" },
+    rules: [
+      { if: '$CI_PIPELINE_SOURCE == "merge_request_event"' },
+      { changes: ["src/**/*"] },
+      { if: '$SKIP_BUILD == "true"', when: "never" },
+    ],
   },
   unit_tests: {
     stage: "test",
@@ -40,6 +36,12 @@ export const EXAMPLE = {
         },
       },
     },
+    rules: [
+      { if: '$CI_COMMIT_BRANCH == "main"' },
+      { if: '$CI_COMMIT_BRANCH == "develop"' },
+      { changes: ["tests/**/*"] },
+      { if: '$SKIP_TESTS == "true"', when: "never" },
+    ],
   },
   integration_tests: {
     stage: "test",
@@ -60,26 +62,21 @@ export const EXAMPLE = {
     image: "alpine",
     needs: ["unit_tests", "integration_tests", "code_quality"],
     script: ['echo "Deploying to staging..."', "./deploy.sh staging"],
-    environment: {
-      name: "staging",
-    },
-    only: ["develop"],
+    environment: { name: "staging" },
+    rules: [
+      { if: '$CI_COMMIT_BRANCH == "develop" && $DEPLOY_STAGING == "true"' },
+      { if: '$SKIP_DEPLOY == "true"', when: "never" },
+    ],
   },
   deploy_production: {
     stage: "deploy",
     image: "alpine",
     needs: ["unit_tests", "integration_tests", "code_quality"],
     script: ['echo "Deploying to production..."', "./deploy.sh production"],
-    environment: {
-      name: "production",
-    },
+    environment: { name: "production" },
     when: "manual",
     only: ["main"],
-    rules: [
-      {
-        if: "$CI_COMMIT_TAG =~ /^v\\d+\\.\\d+\\.\\d+$/",
-      },
-    ],
+    rules: [{ if: "$CI_COMMIT_TAG =~ /^v\\d+\\.\\d+\\.\\d+$/" }],
   },
   ".base_job": {
     tags: ["docker"],

@@ -1,14 +1,20 @@
 import type { RefObject } from "react";
-import type { PipelineData } from "../utils/types";
+import type { Job, PipelineData } from "../utils/types";
 import JobNode from "./jobNode";
 
 interface StageColumnProps {
   stage: string;
   pipelineData: PipelineData;
   jobRefs: RefObject<{ [key: string]: HTMLDivElement }>;
+  extendables: string[];
 }
 
-const StageColumn = ({ stage, pipelineData, jobRefs }: StageColumnProps) => {
+const StageColumn = ({
+  stage,
+  pipelineData,
+  jobRefs,
+  extendables,
+}: StageColumnProps) => {
   const stages = pipelineData?.stages || [];
   const renderJobs = () => {
     return Object.entries(pipelineData)
@@ -39,6 +45,8 @@ const StageColumn = ({ stage, pipelineData, jobRefs }: StageColumnProps) => {
           ref={(el) => {
             if (el) jobRefs.current[key] = el;
           }}
+          jobData={pipelineData[key] as Job}
+          extendables={extendables}
         />
       ));
   };

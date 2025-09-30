@@ -1,3 +1,9 @@
+export interface Rules {
+  if?: string;
+  changes?: string[];
+  when?: string;
+}
+
 export interface Job {
   stage?: string;
   image?: string;
@@ -24,18 +30,16 @@ export interface Job {
     name: string;
   };
   when?: string;
-  rules?: Array<{
-    if: string;
-  }>;
+  rules?: Rules[];
   tags?: string[];
   before_script?: string[];
   after_script?: string[];
-  extends?: string;
+  extends?: string | string[];
+  disabled?: boolean;
 }
 
 export interface PipelineData {
   variables?: Record<string, string>;
   stages: string[];
   [key: string]: Job | string[] | Record<string, string> | undefined;
-  [key: `.${string}`]: Job; // Allow keys that start with a dot
 }
