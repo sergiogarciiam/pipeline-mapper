@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Job, PipelineData } from "../utils/types";
+import type { PipelineData } from "../utils/types";
 
 export function usePipelineArrows(
   pipelineData: PipelineData,
@@ -12,17 +12,18 @@ export function usePipelineArrows(
   useEffect(() => {
     const newArrows: Array<{ start: DOMRect; end: DOMRect }> = [];
 
-    Object.entries(pipelineData).forEach(([jobId, jobData]) => {
-      const job = jobData as Job;
-      job?.needs?.forEach((needId) => {
-        const startElement = jobRefs.current[needId];
-        const endElement = jobRefs.current[jobId];
-        if (startElement && endElement) {
-          newArrows.push({
-            start: startElement.getBoundingClientRect(),
-            end: endElement.getBoundingClientRect(),
-          });
-        }
+    Object.entries(pipelineData.jobs).forEach(([, jobData]) => {
+      Object.entries(jobData).forEach(([jobId, job]) => {
+        job?.needs?.forEach((needId) => {
+          const startElement = jobRefs.current[needId];
+          const endElement = jobRefs.current[jobId];
+          if (startElement && endElement) {
+            newArrows.push({
+              start: startElement.getBoundingClientRect(),
+              end: endElement.getBoundingClientRect(),
+            });
+          }
+        });
       });
     });
 

@@ -148,6 +148,10 @@ function processJob(
     return resolvedJobs[jobName];
   }
 
+  if (data[jobName] === undefined) {
+    return null;
+  }
+
   const job = data[jobName];
 
   if (!job || typeof job !== "object") {
@@ -156,19 +160,17 @@ function processJob(
 
   let processedJob: any = {
     stage: job.stage,
-    rules: job.rules || [],
+    rules: normalizeRules(job.rules || []),
     needs: job.needs || [],
-    extends: Array.isArray(job.extends)
-      ? job.extends
-      : job.extends
-      ? [job.extends]
-      : [],
+    extends: normalizeExtends(job.extends),
+    extendsUndefined: [],
   };
 
   if (job.extends) {
-    const parentsExtends = Array.isArray(job.extends)
-      ? job.extends
-      : [job.extends];
+    const parentsExtends = Array.isArray(processedJob.extends)
+      ? processedJob.extends
+      : [processedJob.extends];
+    const validExtends: string[] = [];
 
     parentsExtends.forEach((parent: string) => {
       if (stack.includes(parent)) {
@@ -180,22 +182,77 @@ function processJob(
       stack.push(parent);
       const parentJob = processJob(parent, data, resolvedJobs, stack);
 
-      if (parentJob) {
-        processedJob = {
-          stage: processedJob.stage || parentJob.stage,
-          rules: [...(parentJob.rules || []), ...(processedJob.rules || [])],
-          needs: [...(parentJob.needs || []), ...(processedJob.needs || [])],
-          extends: [
-            ...(parentJob.extends || []),
-            ...(processedJob.extends || []),
-          ],
-        };
+      if (!parentJob) {
+        processedJob.extendsUndefined.push(parent);
+        return;
+      } else {
+        validExtends.push(parent);
       }
+
+      parentJob.rules = normalizeRules(parentJob.rules || []);
+
+      if (parentJob) {
+        processedJob.rules = [
+          ...(parentJob.rules || []),
+          ...(processedJob.rules || []),
+        ];
+
+        processedJob.needs = [
+          ...(parentJob.needs || []),
+          ...(processedJob.needs || []),
+        ];
+
+        processedJob.extendsUndefined = Array.from(
+          new Set([
+            ...(parentJob.extendsUndefined || []),
+            ...(processedJob.extendsUndefined || []),
+          ])
+        );
+      }
+
+      stack.pop();
     });
+    processedJob.extends = Array.from(new Set(validExtends));
   }
 
   resolvedJobs[jobName] = processedJob;
   return processedJob;
+}
+
+function normalizeRules(rules: any[]): {
+  type: string;
+  value?: any;
+  when?: string;
+}[] {
+  if (!Array.isArray(rules)) {
+    return [];
+  }
+
+  return rules.map((rule) => {
+    if (rule.if) {
+      return { type: "if", value: rule.if, when: rule.when || "on_success" };
+    } else if (rule.exists) {
+      return {
+        type: "exists",
+        value: rule.exists,
+        when: rule.when || "on_success",
+      };
+    } else if (rule.changes) {
+      return {
+        type: "changes",
+        value: rule.changes,
+        when: rule.when || "on_success",
+      };
+    }
+    return { type: "unknown", when: rule.when || "on_success" };
+  });
+}
+
+function normalizeExtends(extendsField: any): string[] {
+  if (!extendsField) {
+    return [];
+  }
+  return Array.isArray(extendsField) ? extendsField : [extendsField];
 }
 
 export function deactivate() {}

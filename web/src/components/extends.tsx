@@ -1,23 +1,21 @@
+import type { Job } from "../utils/types";
+
 interface ExtendsProps {
-  jobData: {
-    extends?: string | string[];
-  };
-  extendables: string[];
+  jobData: Job;
+  isUndefinedExtends?: boolean;
 }
 
-const Extends = ({ jobData, extendables }: ExtendsProps) => {
-  if (!jobData.extends) return null;
+const Extends = ({ jobData, isUndefinedExtends = false }: ExtendsProps) => {
+  const extendsArray = jobData.extends || [];
 
-  const extendsArray = Array.isArray(jobData.extends)
-    ? jobData.extends
-    : [jobData.extends];
+  if (extendsArray.length === 0) return null;
 
   return extendsArray.map((extend, index) => (
     <div
       key={`${extend}-${index}`}
       style={{
         fontSize: "12px",
-        color: `${extendables.includes(extend) ? "#666" : "red"}`,
+        color: isUndefinedExtends ? "red" : "#666",
         marginTop: "4px",
       }}
     >
