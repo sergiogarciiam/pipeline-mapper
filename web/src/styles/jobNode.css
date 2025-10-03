@@ -1,0 +1,27 @@
+.job-node {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: filter 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+}
+
+.job-node__content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Cuando el nodo está enfocado (hover o seleccionado) */
+.job-node--active {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  filter: blur(0px);
+  opacity: 1;
+}
+
+/* Cuando otro nodo está seleccionado → este se desenfoca */
+.job-node--blur {
+  filter: blur(2px);
+  opacity: 0.5;
+}

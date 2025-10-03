@@ -1,16 +1,15 @@
-import { forwardRef, useState } from "react";
-import Extends from "./extends";
+import { forwardRef, type Dispatch, type SetStateAction } from "react";
 import type { Job } from "../utils/types";
-import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 
 interface JobNodeProps {
   jobId: string;
   jobData: Job;
+  jobSelected: string;
+  setJobSelected: Dispatch<SetStateAction<string>>;
 }
 
 const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
-  ({ jobId, jobData }, ref) => {
-    const [isHovered, setIsHovered] = useState(false);
+  ({ jobId, jobData, jobSelected, setJobSelected }, ref) => {
     const hasExtendsUndefined =
       jobData.extendsUndefined && jobData.extendsUndefined.length > 0;
     const isWrongStage = jobData.stage === undefined || jobData.stage === "";
@@ -18,33 +17,16 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
     return (
       <div
         ref={ref}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{
-          border: `1px solid ${
-            hasExtendsUndefined || isWrongStage ? "red" : "#ccc"
-          }`,
-          borderRadius: "8px",
-          padding: "10px",
-          margin: "10px 0",
-          boxShadow: isHovered ? "0 0 10px rgba(0,0,0,0.2)" : "none",
-          transition: "box-shadow 0.3s ease",
-          cursor: "pointer",
-        }}
+        className={`job-node ${jobSelected ? "job-node--active" : ""} ${
+          jobSelected && jobSelected !== jobId ? "job-node--blur" : ""
+        }`}
+        onMouseEnter={() => setJobSelected(jobId)}
+        onMouseLeave={() => setJobSelected("")}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
-        >
+        <div className="job-node__content">
           {jobId}
-          {(hasExtendsUndefined || isWrongStage) && (
-            <VSCodeButton>⚠️</VSCodeButton>
-          )}
+          {(hasExtendsUndefined || isWrongStage) && <p>⚠️</p>}
         </div>
-        {isHovered && jobData.extends && <Extends jobData={jobData} />}
       </div>
     );
   }
