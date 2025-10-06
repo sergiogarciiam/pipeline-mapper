@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "pipeline-mapper.showPipelineMapper",
-        "title": "Show Pipeline Mapper"
+        "command": "pipeline-mapper.generatePipelineMapper",
+        "title": "Generate Pipeline Mapper"
       }
     ]
   },

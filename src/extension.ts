@@ -1,14 +1,11 @@
 import * as vscode from "vscode";
 import * as YAML from "yaml";
 import * as fs from "fs";
+import { Job, PipelineData, Rule } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log(
-    'Congratulations, your extension "pipeline-mapper" is now active!'
-  );
-
   const disposable = vscode.commands.registerCommand(
-    "pipeline-mapper.showPipelineMapper",
+    "pipeline-mapper.generatePipelineMapper",
     () => {
       const editor = vscode.window.activeTextEditor;
 
@@ -91,15 +88,10 @@ function getWebviewContent(
   //<script src="${scriptSrc}"></script>
 }
 
-function processData(data: any) {
+function processData(data: PipelineData) {
   const stages = data.stages || [];
   const hiddenJobs = Object.keys(data).filter((job) => job.startsWith("."));
-  const jobs = stages.reduce((acc: Record<string, any>, stage: string) => {
-    acc[stage] = {};
-    return acc;
-  }, {});
-  jobs["none"] = {};
-  jobs["undefined"] = {};
+  const jobs: Record<string, any> = {};
 
   Object.keys(data).forEach((jobName) => {
     if (isJob(jobName)) {
@@ -109,13 +101,7 @@ function processData(data: any) {
         return;
       }
 
-      if (!job.stage) {
-        jobs["none"][jobName] = job;
-      } else if (!stages.includes(job.stage)) {
-        jobs["undefined"][jobName] = job;
-      } else {
-        jobs[job.stage][jobName] = job;
-      }
+      jobs[jobName] = job;
     }
   });
 
@@ -140,90 +126,64 @@ function isJob(jobName: any): boolean {
 
 function processJob(
   jobName: string,
-  data: any,
-  resolvedJobs: Record<string, any> = {},
+  data: Record<string, any>,
+  resolvedJobs: Record<string, Job> = {},
   stack: string[] = []
-): any {
+): Job | null {
   if (resolvedJobs[jobName]) {
     return resolvedJobs[jobName];
   }
 
-  if (data[jobName] === undefined) {
-    return null;
-  }
-
   const job = data[jobName];
-
   if (!job || typeof job !== "object") {
     return null;
   }
 
-  let processedJob: any = {
+  const { validNeeds, missingNeeds } = analyzeNeeds(job, data);
+
+  const processed: Job = {
     stage: job.stage,
-    rules: normalizeRules(job.rules || []),
-    needs: job.needs || [],
+    rules: normalizeRules(job.rules),
+    needs: validNeeds,
+    noExistNeeds: missingNeeds,
     extends: normalizeExtends(job.extends),
-    extendsUndefined: [],
+    noExistExtends: [],
   };
 
   if (job.extends) {
-    const parentsExtends = Array.isArray(processedJob.extends)
-      ? processedJob.extends
-      : [processedJob.extends];
-    const validExtends: string[] = [];
-
-    parentsExtends.forEach((parent: string) => {
-      if (stack.includes(parent)) {
-        throw new Error(
-          `Cyclic extends detected: ${stack.join(" -> ")} -> ${parent}`
-        );
-      }
-
-      stack.push(parent);
-      const parentJob = processJob(parent, data, resolvedJobs, stack);
-
-      if (!parentJob) {
-        processedJob.extendsUndefined.push(parent);
-        return;
-      } else {
-        validExtends.push(parent);
-      }
-
-      parentJob.rules = normalizeRules(parentJob.rules || []);
-
-      if (parentJob) {
-        processedJob.rules = [
-          ...(parentJob.rules || []),
-          ...(processedJob.rules || []),
-        ];
-
-        processedJob.needs = [
-          ...(parentJob.needs || []),
-          ...(processedJob.needs || []),
-        ];
-
-        processedJob.extendsUndefined = Array.from(
-          new Set([
-            ...(parentJob.extendsUndefined || []),
-            ...(processedJob.extendsUndefined || []),
-          ])
-        );
-      }
-
-      stack.pop();
-    });
-    processedJob.extends = Array.from(new Set(validExtends));
+    resolveExtendsHierarchy(processed, job, data, resolvedJobs, stack);
   }
 
-  resolvedJobs[jobName] = processedJob;
-  return processedJob;
+  resolvedJobs[jobName] = processed;
+  return processed;
 }
 
-function normalizeRules(rules: any[]): {
-  type: string;
-  value?: any;
-  when?: string;
-}[] {
+function analyzeNeeds(
+  job: any,
+  data: Record<string, any>
+): { validNeeds: string[]; missingNeeds: string[] } {
+  const validNeeds: string[] = [];
+  const missingNeeds: string[] = [];
+
+  for (const need of job.needs || []) {
+    const needName = typeof need === "string" ? need : need.job;
+    if (!needName) {
+      continue;
+    }
+    if (!data[needName]) {
+      missingNeeds.push(needName);
+    } else {
+      validNeeds.push(needName);
+    }
+  }
+
+  return {
+    validNeeds: [...new Set(validNeeds)],
+    missingNeeds: [...new Set(missingNeeds)],
+  };
+}
+
+function normalizeRules(rules: any[]): Rule[] {
   if (!Array.isArray(rules)) {
     return [];
   }
@@ -252,7 +212,55 @@ function normalizeExtends(extendsField: any): string[] {
   if (!extendsField) {
     return [];
   }
+
   return Array.isArray(extendsField) ? extendsField : [extendsField];
+}
+
+function resolveExtendsHierarchy(
+  processed: Job,
+  job: any,
+  data: Record<string, any>,
+  resolvedJobs: Record<string, Job>,
+  stack: string[]
+) {
+  const parents = Array.isArray(processed.extends)
+    ? processed.extends
+    : [processed.extends];
+  const validParents: string[] = [];
+
+  for (const parent of parents) {
+    if (stack.includes(parent)) {
+      throw new Error(
+        `Cyclic extends detected: ${stack.join(" -> ")} -> ${parent}`
+      );
+    }
+
+    stack.push(parent);
+    const parentJob = processJob(parent, data, resolvedJobs, stack);
+
+    if (!parentJob) {
+      processed.noExistExtends.push(parent);
+      stack.pop();
+      continue;
+    }
+
+    validParents.push(parent);
+    mergeJobInheritance(processed, parentJob);
+    stack.pop();
+  }
+
+  processed.extends = [...new Set(validParents)];
+}
+
+function mergeJobInheritance(child: Job, parent: Job): void {
+  child.rules = [...normalizeRules(parent.rules), ...child.rules];
+  child.needs = [...new Set([...parent.needs, ...child.needs])];
+  child.noExistNeeds = [
+    ...new Set([...parent.noExistNeeds, ...child.noExistNeeds]),
+  ];
+  child.noExistExtends = [
+    ...new Set([...parent.noExistExtends, ...child.noExistExtends]),
+  ];
 }
 
 export function deactivate() {}

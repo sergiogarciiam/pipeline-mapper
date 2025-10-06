@@ -3,226 +3,226 @@ import type { PipelineData } from "./types";
 export const EXAMPLE: PipelineData = {
   stages: ["setup", "lint", "build", "test", "deploy", "monitor", "cleanup"],
   jobs: {
-    setup: {
-      install: {
-        stage: "setup",
-        rules: [
-          {
-            type: "if",
-            value: '$CI_PIPELINE_SOURCE == "merge_request_event"',
-            when: "always",
-          },
-        ],
-        needs: [],
-        extends: [".setup_template"],
-        extendsUndefined: [],
-      },
+    install: {
+      stage: "setup",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_PIPELINE_SOURCE == "merge_request_event"',
+          when: "always",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [".setup_template"],
+      noExistExtends: [],
     },
     lint: {
-      lint: {
-        stage: "lint",
-        rules: [
-          {
-            type: "if",
-            value: '$CI_COMMIT_BRANCH == "develop"',
-            when: "delayed",
-          },
-          {
-            type: "if",
-            value: '$CI_COMMIT_BRANCH == "main"',
-            when: "always",
-          },
-        ],
-        needs: [],
-        extends: [".templates"],
-        extendsUndefined: [],
-      },
+      stage: "lint",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "develop"',
+          when: "delayed",
+        },
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "main"',
+          when: "always",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [".templates"],
+      noExistExtends: [],
     },
-    build: {
-      build_docker: {
-        stage: "build",
-        rules: [
-          {
-            type: "if",
-            value: '$CI_COMMIT_BRANCH == "main"',
-            when: "on_success",
-          },
-        ],
-        needs: ["build_app"],
-        extends: [],
-        extendsUndefined: [],
-      },
-      variable_job: {
-        stage: "build",
-        rules: [],
-        needs: [],
-        extends: [],
-        extendsUndefined: [],
-      },
-      matrix_build: {
-        stage: "build",
-        rules: [
-          {
-            type: "if",
-            value: '$CI_COMMIT_BRANCH == "main"',
-            when: "always",
-          },
-        ],
-        needs: [],
-        extends: [],
-        extendsUndefined: [],
-      },
-      noExtendsExist: {
-        stage: "build",
-        rules: [],
-        needs: [],
-        extends: [".templates"],
-        extendsUndefined: [".non_existent_template"],
-      },
+    build_app: {
+      rules: [
+        {
+          type: "unknown",
+          when: "delayed",
+        },
+      ],
+      needs: ["install"],
+      noExistNeeds: [],
+      extends: [".build_template"],
+      noExistExtends: [],
     },
-    test: {
-      unit_tests: {
-        stage: "test",
-        rules: [
-          {
-            type: "if",
-            value: '$CI_PIPELINE_SOURCE == "push"',
-            when: "manual",
-          },
-        ],
-        needs: ["build_app", "lint"],
-        extends: [],
-        extendsUndefined: [],
-      },
-      integration_tests: {
-        stage: "test",
-        rules: [
-          {
-            type: "if",
-            value: "$CI_COMMIT_BRANCH =~ /^feature\\//",
-            when: "delayed",
-          },
-        ],
-        needs: ["build_docker"],
-        extends: [],
-        extendsUndefined: [],
-      },
-      smoke_tests: {
-        stage: "test",
-        rules: [],
-        needs: ["integration_tests"],
-        extends: [],
-        extendsUndefined: [],
-      },
+    build_docs: {
+      rules: [
+        {
+          type: "unknown",
+          when: "delayed",
+        },
+      ],
+      needs: ["install"],
+      noExistNeeds: [],
+      extends: [".build_template"],
+      noExistExtends: [],
     },
-    deploy: {
-      deploy_staging: {
-        stage: "deploy",
-        rules: [
-          {
-            type: "if",
-            value: '$CI_COMMIT_BRANCH == "develop"',
-            when: "on_success",
-          },
-        ],
-        needs: ["smoke_tests"],
-        extends: [],
-        extendsUndefined: [],
-      },
-      deploy_prod: {
-        stage: "deploy",
-        rules: [
-          {
-            type: "if",
-            value: '$CI_COMMIT_BRANCH == "main"',
-            when: "always",
-          },
-          {
-            type: "if",
-            value: "$CI_COMMIT_TAG",
-            when: "manual",
-          },
-        ],
-        needs: ["smoke_tests"],
-        extends: [],
-        extendsUndefined: [],
-      },
-      deploy_hotfix: {
-        stage: "deploy",
-        rules: [
-          {
-            type: "if",
-            value: "$CI_COMMIT_BRANCH =~ /^hotfix\\//",
-            when: "always",
-          },
-        ],
-        needs: [],
-        extends: [],
-        extendsUndefined: [],
-      },
+    build_docker: {
+      stage: "build",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "main"',
+          when: "on_success",
+        },
+      ],
+      needs: ["build_app"],
+      noExistNeeds: ["noNeed"],
+      extends: [],
+      noExistExtends: [],
     },
-    monitor: {
-      monitoring: {
-        stage: "monitor",
-        rules: [
-          {
-            type: "if",
-            value: '$CI_PIPELINE_SOURCE == "schedule"',
-            when: "always",
-          },
-        ],
-        needs: [],
-        extends: [],
-        extendsUndefined: [],
-      },
+    unit_tests: {
+      stage: "test",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_PIPELINE_SOURCE == "push"',
+          when: "manual",
+        },
+      ],
+      needs: ["build_app", "lint"],
+      noExistNeeds: ["nop"],
+      extends: [],
+      noExistExtends: [],
+    },
+    integration_tests: {
+      stage: "test",
+      rules: [
+        {
+          type: "if",
+          value: "$CI_COMMIT_BRANCH =~ /^feature\\//",
+          when: "delayed",
+        },
+      ],
+      needs: ["build_docker"],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+    },
+    smoke_tests: {
+      stage: "test",
+      rules: [],
+      needs: ["integration_tests"],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+    },
+    deploy_staging: {
+      stage: "deploy",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "develop"',
+          when: "on_success",
+        },
+      ],
+      needs: ["smoke_tests"],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+    },
+    deploy_prod: {
+      stage: "deploy",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "main"',
+          when: "always",
+        },
+        {
+          type: "if",
+          value: "$CI_COMMIT_TAG",
+          when: "manual",
+        },
+      ],
+      needs: ["smoke_tests"],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+    },
+    deploy_hotfix: {
+      stage: "deploy",
+      rules: [
+        {
+          type: "if",
+          value: "$CI_COMMIT_BRANCH =~ /^hotfix\\//",
+          when: "always",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+    },
+    monitoring: {
+      stage: "monitor",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_PIPELINE_SOURCE == "schedule"',
+          when: "always",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
     },
     cleanup: {
-      cleanup: {
-        stage: "cleanup",
-        rules: [],
-        needs: [],
-        extends: [],
-        extendsUndefined: [],
-      },
+      stage: "cleanup",
+      rules: [],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
     },
-    none: {
-      build_app: {
-        rules: [
-          {
-            type: "unknown",
-            when: "delayed",
-          },
-        ],
-        needs: ["install"],
-        extends: [".build_template"],
-        extendsUndefined: [],
-      },
-      build_docs: {
-        rules: [
-          {
-            type: "unknown",
-            when: "delayed",
-          },
-        ],
-        needs: ["install"],
-        extends: [".build_template"],
-        extendsUndefined: [],
-      },
-      orphan_job: {
-        rules: [],
-        needs: [],
-        extends: [],
-        extendsUndefined: [],
-      },
+    orphan_job: {
+      rules: [],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
     },
-    undefined: {
-      ghost_job: {
-        stage: "ghost",
-        rules: [],
-        needs: [],
-        extends: [],
-        extendsUndefined: [],
-      },
+    ghost_job: {
+      stage: "ghost",
+      rules: [],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+    },
+    variable_job: {
+      stage: "build",
+      rules: [],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+    },
+    matrix_build: {
+      stage: "build",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "main"',
+          when: "always",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+    },
+    noExtendsExist: {
+      stage: "build",
+      rules: [],
+      needs: [],
+      noExistNeeds: [],
+      extends: [".templates"],
+      noExistExtends: [".non_existent_template"],
     },
   },
   hiddenJobs: [
