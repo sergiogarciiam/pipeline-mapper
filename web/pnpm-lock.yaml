@@ -11,9 +11,6 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.13
         version: 4.1.13(vite@7.1.7(jiti@2.6.0)(lightningcss@1.30.1))
-      '@vscode/webview-ui-toolkit':
-        specifier: ^1.4.0
-        version: 1.4.0(react@19.1.1)
       react:
         specifier: ^19.1.1
         version: 19.1.1
@@ -373,20 +370,6 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@microsoft/fast-element@1.14.0':
-    resolution: {integrity: sha512-zXvuSOzvsu8zDTy9eby8ix8VqLop2rwKRgp++ZN2kTCsoB3+QJVoaGD2T/Cyso2ViZQFXNpiNCVKfnmxBvmWkQ==}
-
-  '@microsoft/fast-foundation@2.50.0':
-    resolution: {integrity: sha512-8mFYG88Xea1jZf2TI9Lm/jzZ6RWR8x29r24mGuLojNYqIR2Bl8+hnswoV6laApKdCbGMPKnsAL/O68Q0sRxeVg==}
-
-  '@microsoft/fast-react-wrapper@0.3.25':
-    resolution: {integrity: sha512-jKzmk2xJV93RL/jEFXEZgBvXlKIY4N4kXy3qrjmBfFpqNi3VjY+oUTWyMnHRMC5EUhIFxD+Y1VD4u9uIPX3jQw==}
-    peerDependencies:
-      react: '>=16.9.0'
-
-  '@microsoft/fast-web-utilities@5.4.1':
-    resolution: {integrity: sha512-ReWYncndjV3c8D8iq9tp7NcFNc1vbVHvcBFPME2nNFKNbS1XCesYZGlIlf3ot5EmuOXPlrzUHOWzQ2vFpIkqDg==}
-
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -693,12 +676,6 @@ packages:
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
 
-  '@vscode/webview-ui-toolkit@1.4.0':
-    resolution: {integrity: sha512-modXVHQkZLsxgmd5yoP3ptRC/G8NBDD+ob+ngPiWNQdlrH6H1xR/qgOBD85bfU3BhOB5sZzFWBwwhp9/SfoHww==}
-    deprecated: This package has been deprecated, https://github.com/microsoft/vscode-webview-ui-toolkit/issues/561
-    peerDependencies:
-      react: '>=16.9.0'
-
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -864,9 +841,6 @@ packages:
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
-
-  exenv-es6@1.1.1:
-    resolution: {integrity: sha512-vlVu3N8d6yEMpMsEm+7sUBAI81aqYYuEvfK0jNqmdb/OPXzzH7QWDDnVjMvDSY47JdHEqx/dfC/q8WkfoTmpGQ==}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -1240,9 +1214,6 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
-  tabbable@5.3.3:
-    resolution: {integrity: sha512-QD9qKY3StfbZqWOPLp0++pOrAVb/HbUi5xCc8cUo4XjP19808oaMiDzn0leBY5mCespIBM0CIZePzZjgzR83kA==}
-
   tailwindcss@4.1.13:
     resolution: {integrity: sha512-i+zidfmTqtwquj4hMEwdjshYYgMbOrPzb9a0M3ZgNa0JMoZeFC6bxZvO8yr8ozS6ix2SDz0+mvryPeBs2TFE+w==}
 
@@ -1267,12 +1238,6 @@ packages:
     engines: {node: '>=18.12'}
     peerDependencies:
       typescript: '>=4.8.4'
-
-  tslib@1.14.1:
-    resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
-
-  tslib@2.8.1:
-    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -1629,25 +1594,6 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@microsoft/fast-element@1.14.0': {}
-
-  '@microsoft/fast-foundation@2.50.0':
-    dependencies:
-      '@microsoft/fast-element': 1.14.0
-      '@microsoft/fast-web-utilities': 5.4.1
-      tabbable: 5.3.3
-      tslib: 1.14.1
-
-  '@microsoft/fast-react-wrapper@0.3.25(react@19.1.1)':
-    dependencies:
-      '@microsoft/fast-element': 1.14.0
-      '@microsoft/fast-foundation': 2.50.0
-      react: 19.1.1
-
-  '@microsoft/fast-web-utilities@5.4.1':
-    dependencies:
-      exenv-es6: 1.1.1
-
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -1937,14 +1883,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vscode/webview-ui-toolkit@1.4.0(react@19.1.1)':
-    dependencies:
-      '@microsoft/fast-element': 1.14.0
-      '@microsoft/fast-foundation': 2.50.0
-      '@microsoft/fast-react-wrapper': 0.3.25(react@19.1.1)
-      react: 19.1.1
-      tslib: 2.8.1
-
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:
       acorn: 8.15.0
@@ -2142,8 +2080,6 @@ snapshots:
   estraverse@5.3.0: {}
 
   esutils@2.0.3: {}
-
-  exenv-es6@1.1.1: {}
 
   fast-deep-equal@3.1.3: {}
 
@@ -2454,8 +2390,6 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  tabbable@5.3.3: {}
-
   tailwindcss@4.1.13: {}
 
   tapable@2.2.3: {}
@@ -2480,10 +2414,6 @@ snapshots:
   ts-api-utils@2.1.0(typescript@5.8.3):
     dependencies:
       typescript: 5.8.3
-
-  tslib@1.14.1: {}
-
-  tslib@2.8.1: {}
 
   type-check@0.4.0:
     dependencies:

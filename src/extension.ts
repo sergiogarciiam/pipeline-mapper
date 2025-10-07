@@ -151,7 +151,7 @@ function processJob(
   };
 
   if (job.extends) {
-    resolveExtendsHierarchy(processed, job, data, resolvedJobs, stack);
+    resolveExtendsHierarchy(processed, data, resolvedJobs, stack);
   }
 
   resolvedJobs[jobName] = processed;
@@ -218,7 +218,6 @@ function normalizeExtends(extendsField: any): string[] {
 
 function resolveExtendsHierarchy(
   processed: Job,
-  job: any,
   data: Record<string, any>,
   resolvedJobs: Record<string, Job>,
   stack: string[]

@@ -23,7 +23,7 @@ export const EXAMPLE: PipelineData = {
         {
           type: "if",
           value: '$CI_COMMIT_BRANCH == "develop"',
-          when: "delayed",
+          when: "never",
         },
         {
           type: "if",

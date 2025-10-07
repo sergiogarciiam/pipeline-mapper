@@ -1,14 +1,13 @@
-import {
-  VSCodeButton,
-  VSCodeProgressRing,
-} from "@vscode/webview-ui-toolkit/react";
 import { useRef, useState } from "react";
 import { EXAMPLE } from "./utils/constants";
 import StageColumn from "./components/stageColumn";
 import type { PipelineData } from "./utils/types";
 import { usePipelineArrows } from "./hooks/usePipelineArrows";
 import ArrowsCanvas from "./components/arrowsCanvas";
-import { useErrors } from "./hooks/useErrors";
+import Footer from "./components/footer";
+import Rules from "./components/rules";
+import { DEFAULT_RULE } from "./utils/variables";
+import { usePipeline } from "./hooks/usePipeline";
 
 function App() {
   const pipelineData =
@@ -17,54 +16,41 @@ function App() {
   const [jobSelected, setJobSelected] = useState<string>("");
   const arrows = usePipelineArrows(pipelineData, jobRefs);
   const [isShowArrows, setIsShowArrows] = useState(false);
-  const errors = useErrors(pipelineData, jobSelected);
+  const [selectedRule, setSelectedRule] = useState(DEFAULT_RULE);
+
+  const [newPipelineData] = usePipeline(pipelineData, selectedRule);
 
   return (
     <div className="app">
       <div className="app__controls">
-        <VSCodeButton onClick={() => setIsShowArrows(!isShowArrows)}>
+        <Rules
+          selectedRule={selectedRule}
+          setSelectedRule={setSelectedRule}
+        ></Rules>
+        <button onClick={() => setIsShowArrows(!isShowArrows)}>
           Show Dependencies
-        </VSCodeButton>
+        </button>
       </div>
 
       {isShowArrows && <ArrowsCanvas arrows={arrows} />}
 
       <div className="app__stages">
-        {pipelineData.stages.length > 0 ? (
-          Object.keys(pipelineData.jobs).map((stage: string) => (
+        {newPipelineData.stages.length > 0 ? (
+          newPipelineData.stages.map((stage: string) => (
             <StageColumn
               key={stage}
               stage={stage}
-              pipelineData={pipelineData}
+              pipelineData={newPipelineData}
               jobRefs={jobRefs}
               jobSelected={jobSelected}
               setJobSelected={setJobSelected}
             />
           ))
         ) : (
-          <VSCodeProgressRing />
+          <p>Loading...</p>
         )}
       </div>
-
-      <div className="app__footer">
-        <div className="app__footer-job-info">
-          {jobSelected ? (
-            <div>
-              <strong>Job Name:</strong> {jobSelected}
-            </div>
-          ) : (
-            <div>No job selected</div>
-          )}
-        </div>
-        <div className="app__footer-errors">
-          <p>Errors</p>
-          {errors.length === 0 ? (
-            <div>No errors</div>
-          ) : (
-            errors.map((error, index) => <div key={index}>{error}</div>)
-          )}
-        </div>
-      </div>
+      <Footer pipelineData={newPipelineData} jobSelected={jobSelected}></Footer>
     </div>
   );
 }

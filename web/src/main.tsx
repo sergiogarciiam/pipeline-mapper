@@ -6,6 +6,7 @@ import "./styles/global.css";
 import "./styles/app.css";
 import "./styles/stageColumn.css";
 import "./styles/jobNode.css";
+import "./styles/footer.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

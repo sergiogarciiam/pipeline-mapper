@@ -17,27 +17,28 @@ const StageColumn = ({
   jobSelected,
   setJobSelected,
 }: StageColumnProps) => {
-  if (stage === "undefined" || stage === "none") {
-    return;
-  }
+  const jobs = pipelineData.jobs || {};
 
   return (
     <div className="stage-column">
       <h2 className="stage-column__title">{stage}</h2>
-      {Object.entries(pipelineData.jobs[stage] || {}).map(
-        ([jobId, jobData]) => (
+      {Object.keys(jobs).map((jobName) => {
+        if (jobs[jobName].stage !== stage) {
+          return null;
+        }
+        return (
           <JobNode
-            key={jobId}
+            key={jobName}
             ref={(el) => {
-              if (el) jobRefs.current[jobId] = el;
+              if (el) jobRefs.current[jobName] = el;
             }}
-            jobId={jobId}
-            jobData={jobData as Job}
+            jobId={jobName}
+            jobData={jobs[jobName] as Job}
             jobSelected={jobSelected}
             setJobSelected={setJobSelected}
           />
-        )
-      )}
+        );
+      })}
     </div>
   );
 };

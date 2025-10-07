@@ -13,15 +13,18 @@
   gap: 6px;
 }
 
-/* Cuando el nodo está enfocado (hover o seleccionado) */
 .job-node--active {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   filter: blur(0px);
   opacity: 1;
 }
 
-/* Cuando otro nodo está seleccionado → este se desenfoca */
 .job-node--blur {
   filter: blur(2px);
   opacity: 0.5;
+}
+
+.job-node--undefined {
+  opacity: 0.3;
+  border: 1px solid red;
 }

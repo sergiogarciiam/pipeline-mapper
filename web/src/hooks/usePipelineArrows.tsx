@@ -12,18 +12,16 @@ export function usePipelineArrows(
   useEffect(() => {
     const newArrows: Array<{ start: DOMRect; end: DOMRect }> = [];
 
-    Object.entries(pipelineData.jobs).forEach(([, jobData]) => {
-      Object.entries(jobData).forEach(([jobId, job]) => {
-        job?.needs?.forEach((needId) => {
-          const startElement = jobRefs.current[needId];
-          const endElement = jobRefs.current[jobId];
-          if (startElement && endElement) {
-            newArrows.push({
-              start: startElement.getBoundingClientRect(),
-              end: endElement.getBoundingClientRect(),
-            });
-          }
-        });
+    Object.entries(pipelineData.jobs).forEach(([jobId, job]) => {
+      job?.needs?.forEach((needId) => {
+        const startElement = jobRefs.current[needId];
+        const endElement = jobRefs.current[jobId];
+        if (startElement && endElement) {
+          newArrows.push({
+            start: startElement.getBoundingClientRect(),
+            end: endElement.getBoundingClientRect(),
+          });
+        }
       });
     });
 

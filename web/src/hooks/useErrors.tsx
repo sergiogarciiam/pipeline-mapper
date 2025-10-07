@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { PipelineData } from "../utils/types";
+import type { Job, PipelineData } from "../utils/types";
 
 export function useErrors(pipelineData: PipelineData, jobSelected: string) {
   const [errors, setErrors] = useState<string[]>([]);
@@ -8,49 +8,15 @@ export function useErrors(pipelineData: PipelineData, jobSelected: string) {
     const newErrors: string[] = [];
 
     if (jobSelected !== "") {
-      const selectedJob = Object.keys(pipelineData.jobs)
-        .map((stage) => pipelineData.jobs[stage][jobSelected])
-        .find((job) => job !== undefined);
+      const selectedJob = pipelineData.jobs[jobSelected];
 
       if (selectedJob) {
-        if (Array.isArray(selectedJob.extendsUndefined)) {
-          selectedJob.extendsUndefined.forEach((ext) => {
-            newErrors.push(
-              `Job "${jobSelected}" extends undefined template "${ext}"`
-            );
-          });
-        }
+        fillErrorsArray(pipelineData, selectedJob, newErrors, jobSelected);
       }
     } else {
-      Object.keys(pipelineData.jobs).forEach((stage: string) => {
-        const jobs = pipelineData.jobs[stage];
-
-        if (stage === "undefined") {
-          Object.keys(jobs).forEach((jobId: string) => {
-            const job = jobs[jobId];
-            newErrors.push(
-              `Job "${jobId}" has an undefined stage "${job.stage}"`
-            );
-          });
-        }
-
-        if (stage === "none") {
-          Object.keys(jobs).forEach((jobId: string) => {
-            newErrors.push(`Job "${jobId}" hasn't got a stage defined`);
-          });
-        }
-
-        Object.keys(jobs).forEach((jobId: string) => {
-          const job = jobs[jobId];
-
-          if (Array.isArray(job.extendsUndefined)) {
-            job.extendsUndefined.forEach((ext) => {
-              newErrors.push(
-                `Job "${jobId}" extends undefined template "${ext}"`
-              );
-            });
-          }
-        });
+      Object.keys(pipelineData.jobs).forEach((jobName: string) => {
+        const job = pipelineData.jobs[jobName];
+        fillErrorsArray(pipelineData, job, newErrors, jobName);
       });
     }
 
@@ -58,4 +24,28 @@ export function useErrors(pipelineData: PipelineData, jobSelected: string) {
   }, [pipelineData, jobSelected]);
 
   return errors;
+}
+
+function fillErrorsArray(
+  pipelineData: PipelineData,
+  job: Job,
+  newErrors: string[],
+  jobName: string
+) {
+  if (!job.stage) {
+    newErrors.push(`Job "${jobName}" has no stage defined`);
+  } else if (!pipelineData.stages.includes(job.stage)) {
+    newErrors.push(`Job "${jobName}" has undefined stage "${job.stage}"`);
+  }
+
+  if (Array.isArray(job.noExistNeeds)) {
+    job.noExistNeeds.forEach((need) => {
+      newErrors.push(`Job "${jobName}" needs undefined job "${need}"`);
+    });
+  }
+  if (Array.isArray(job.noExistExtends)) {
+    job.noExistExtends.forEach((ext) => {
+      newErrors.push(`Job "${jobName}" extends undefined template "${ext}"`);
+    });
+  }
 }

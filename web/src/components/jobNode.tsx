@@ -10,8 +10,10 @@ interface JobNodeProps {
 
 const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
   ({ jobId, jobData, jobSelected, setJobSelected }, ref) => {
-    const hasExtendsUndefined =
-      jobData.extendsUndefined && jobData.extendsUndefined.length > 0;
+    const hasNoExistExtends =
+      jobData.noExistExtends && jobData.noExistExtends.length > 0;
+    const hasNoExistNeeds =
+      jobData.noExistNeeds && jobData.noExistNeeds.length > 0;
     const isWrongStage = jobData.stage === undefined || jobData.stage === "";
 
     return (
@@ -19,13 +21,13 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
         ref={ref}
         className={`job-node ${jobSelected ? "job-node--active" : ""} ${
           jobSelected && jobSelected !== jobId ? "job-node--blur" : ""
-        }`}
+        } ${jobData.undefined === true ? "job-node--undefined" : ""}`}
         onMouseEnter={() => setJobSelected(jobId)}
         onMouseLeave={() => setJobSelected("")}
       >
         <div className="job-node__content">
           {jobId}
-          {(hasExtendsUndefined || isWrongStage) && <p>⚠️</p>}
+          {(hasNoExistNeeds || hasNoExistExtends || isWrongStage) && <p>⚠️</p>}
         </div>
       </div>
     );
