@@ -23,7 +23,7 @@ export const EXAMPLE: PipelineData = {
         {
           type: "if",
           value: '$CI_COMMIT_BRANCH == "develop"',
-          when: "never",
+          when: "delayed",
         },
         {
           type: "if",
@@ -44,7 +44,7 @@ export const EXAMPLE: PipelineData = {
         },
       ],
       needs: ["install"],
-      noExistNeeds: [],
+      noExistNeeds: ["abc"],
       extends: [".build_template"],
       noExistExtends: [],
     },
@@ -56,7 +56,7 @@ export const EXAMPLE: PipelineData = {
         },
       ],
       needs: ["install"],
-      noExistNeeds: [],
+      noExistNeeds: ["abc"],
       extends: [".build_template"],
       noExistExtends: [],
     },
@@ -79,7 +79,8 @@ export const EXAMPLE: PipelineData = {
       rules: [
         {
           type: "if",
-          value: '$CI_PIPELINE_SOURCE == "push"',
+          value:
+            '$CI_PIPELINE_SOURCE == "push" || $CI_COMMIT_BRANCH == "develop"',
           when: "manual",
         },
       ],
@@ -104,7 +105,13 @@ export const EXAMPLE: PipelineData = {
     },
     smoke_tests: {
       stage: "test",
-      rules: [],
+      rules: [
+        {
+          type: "changes",
+          value: ["src/frontend/**/*", "package.json", "package-lock.json"],
+          when: "on_success",
+        },
+      ],
       needs: ["integration_tests"],
       noExistNeeds: [],
       extends: [],

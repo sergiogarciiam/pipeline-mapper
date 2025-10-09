@@ -1,6 +1,6 @@
 export interface Rules {
   type?: string;
-  value?: string;
+  value?: string | string[];
   when?: string;
 }
 
@@ -18,7 +18,8 @@ export interface Job {
   noExistNeeds?: string[];
   extends?: string[];
   noExistExtends?: string[];
-  undefined?: boolean;
+  isDisabled?: boolean;
+  needsErrors?: string[];
 }
 
 export interface PipelineData {

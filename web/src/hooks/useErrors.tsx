@@ -44,8 +44,16 @@ function fillErrorsArray(
     });
   }
   if (Array.isArray(job.noExistExtends)) {
-    job.noExistExtends.forEach((ext) => {
-      newErrors.push(`Job "${jobName}" extends undefined template "${ext}"`);
+    job.noExistExtends.forEach((extend) => {
+      newErrors.push(`Job "${jobName}" extends undefined template "${extend}"`);
+    });
+  }
+
+  if (Array.isArray(job.needsErrors)) {
+    job.needsErrors.forEach((need) => {
+      newErrors.push(
+        `Job "${jobName}" needs undefined job "${need}" with the new rules`
+      );
     });
   }
 }

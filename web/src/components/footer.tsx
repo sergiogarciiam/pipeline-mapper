@@ -43,7 +43,8 @@ const Footer = ({ pipelineData, jobSelected }: FooterProps) => {
               <ul>
                 {pipelineData.jobs[jobSelected].rules?.map((rule, index) => (
                   <li key={index}>
-                    If <code>{rule.value}</code>, then <code>{rule.when}</code>
+                    {rule.type} <code>{rule.value}</code>, then{" "}
+                    <code>{rule.when}</code>
                   </li>
                 ))}
               </ul>

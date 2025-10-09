@@ -1,12 +1,11 @@
 import { useRef, useState } from "react";
 import { EXAMPLE } from "./utils/constants";
 import StageColumn from "./components/stageColumn";
-import type { PipelineData } from "./utils/types";
+import { type PipelineData, type SelectedRule } from "./utils/types";
 import { usePipelineArrows } from "./hooks/usePipelineArrows";
 import ArrowsCanvas from "./components/arrowsCanvas";
 import Footer from "./components/footer";
 import Rules from "./components/rules";
-import { DEFAULT_RULE } from "./utils/variables";
 import { usePipeline } from "./hooks/usePipeline";
 
 function App() {
@@ -16,16 +15,18 @@ function App() {
   const [jobSelected, setJobSelected] = useState<string>("");
   const arrows = usePipelineArrows(pipelineData, jobRefs);
   const [isShowArrows, setIsShowArrows] = useState(false);
-  const [selectedRule, setSelectedRule] = useState(DEFAULT_RULE);
+  const [selectedRules, setSelectedRules] = useState<SelectedRule[] | null>(
+    null
+  );
 
-  const [newPipelineData] = usePipeline(pipelineData, selectedRule);
+  const [newPipelineData] = usePipeline(pipelineData, selectedRules);
 
   return (
     <div className="app">
       <div className="app__controls">
         <Rules
-          selectedRule={selectedRule}
-          setSelectedRule={setSelectedRule}
+          selectedRules={selectedRules}
+          setSelectedRules={setSelectedRules}
         ></Rules>
         <button onClick={() => setIsShowArrows(!isShowArrows)}>
           Show Dependencies

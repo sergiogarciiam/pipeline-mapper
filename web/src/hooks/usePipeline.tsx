@@ -3,54 +3,80 @@ import type { PipelineData, SelectedRule } from "../utils/types";
 
 export function usePipeline(
   pipelineData: PipelineData,
-  selectedRule: SelectedRule
+  selectedRules: SelectedRule[] | null
 ) {
   const [newPipelineData, setNewPipelineData] =
     useState<PipelineData>(pipelineData);
 
   useEffect(() => {
-    Object.keys(pipelineData.jobs).forEach((jobId) => {
-      const job = pipelineData.jobs[jobId];
-      if (job.rules && job.rules.length > 0) {
-        const hasNeverRule = job.rules.find((rule) => {
-          if (rule.when && rule.when === "never") {
-            if (
-              rule.type === selectedRule.type &&
-              rule.value ===
-                `${selectedRule.variable} ${selectedRule.expression} "${selectedRule.value}"`
-            ) {
-              return true;
+    const updatedPipeline: PipelineData = JSON.parse(
+      JSON.stringify(pipelineData)
+    );
+
+    if (!selectedRules) {
+      for (const [, job] of Object.entries(updatedPipeline.jobs)) {
+        job.isDisabled = false;
+        job.needsErrors = [];
+      }
+      setNewPipelineData(updatedPipeline);
+      return;
+    }
+
+    for (const [, job] of Object.entries(updatedPipeline.jobs)) {
+      let matchesAnyRule = false;
+
+      if (Array.isArray(job.rules)) {
+        for (const selectedRule of selectedRules) {
+          for (const rule of job.rules) {
+            if (rule.type !== selectedRule.type) continue;
+
+            switch (rule.type) {
+              case "if": {
+                const expectedValue = `${selectedRule.variable} ${selectedRule.expression} "${selectedRule.value}"`;
+                if (rule.value === expectedValue && rule.when !== "never") {
+                  matchesAnyRule = true;
+                }
+                break;
+              }
+              case "exists":
+              case "changes":
+                if (
+                  rule.value?.includes(selectedRule.value) &&
+                  rule.when !== "never"
+                ) {
+                  matchesAnyRule = true;
+                }
+                break;
             }
-          } else {
-            return false;
+
+            if (matchesAnyRule) break;
           }
-        });
-        if (hasNeverRule) {
-          setNewPipelineData((prevData) => ({
-            ...prevData,
-            jobs: {
-              ...prevData.jobs,
-              [jobId]: {
-                ...prevData.jobs[jobId],
-                undefined: true,
-              },
-            },
-          }));
-        } else {
-          setNewPipelineData((prevData) => ({
-            ...prevData,
-            jobs: {
-              ...prevData.jobs,
-              [jobId]: {
-                ...prevData.jobs[jobId],
-                undefined: false,
-              },
-            },
-          }));
+          if (matchesAnyRule) break;
         }
       }
-    });
-  }, [pipelineData, selectedRule]);
 
-  return [newPipelineData];
+      job.isDisabled = !matchesAnyRule;
+    }
+
+    for (const [, job] of Object.entries(updatedPipeline.jobs)) {
+      if (job.isDisabled) continue;
+      const newNeeds: string[] = [];
+      const needsErrors: string[] = [];
+
+      job.needs?.forEach((need) => {
+        if (updatedPipeline.jobs[need]?.isDisabled) {
+          needsErrors.push(need);
+        } else {
+          newNeeds.push(need);
+        }
+      });
+
+      job.needs = newNeeds;
+      job.needsErrors = needsErrors;
+    }
+
+    setNewPipelineData(updatedPipeline);
+  }, [pipelineData, selectedRules]);
+
+  return [newPipelineData] as const;
 }
