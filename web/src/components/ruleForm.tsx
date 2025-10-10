@@ -3,7 +3,7 @@ import { EXPRESSIONS, RULES, VARIABLES } from "../utils/variables";
 
 interface RuleFormProps {
   newSelectedRule: SelectedRule;
-  setNewSelectedRule: React.Dispatch<React.SetStateAction<SelectedRule>>;
+  setNewSelectedRule: (rule: SelectedRule) => void;
   handleRemoveRule: () => void;
 }
 
@@ -13,7 +13,7 @@ const RuleForm = ({
   handleRemoveRule,
 }: RuleFormProps) => {
   return (
-    <div>
+    <div className="rule-form">
       <select
         value={newSelectedRule.type}
         onChange={(e) =>
@@ -21,11 +21,12 @@ const RuleForm = ({
         }
       >
         {RULES.map((rule) => (
-          <option key={rule} className="app__rule" value={rule}>
+          <option key={rule} value={rule}>
             {rule}
           </option>
         ))}
       </select>
+
       <select
         value={newSelectedRule.variable}
         onChange={(e) =>
@@ -34,28 +35,33 @@ const RuleForm = ({
         disabled={newSelectedRule.type !== "if"}
       >
         {VARIABLES.map((variable) => (
-          <option key={variable} className="app__rule" value={variable}>
+          <option key={variable} value={variable}>
             {variable}
           </option>
         ))}
       </select>
+
       <select
         value={newSelectedRule.expression}
         onChange={(e) =>
-          setNewSelectedRule({ ...newSelectedRule, expression: e.target.value })
+          setNewSelectedRule({
+            ...newSelectedRule,
+            expression: e.target.value,
+          })
         }
         disabled={newSelectedRule.type !== "if"}
       >
         {EXPRESSIONS.map((expression) => (
-          <option key={expression} className="app__rule" value={expression}>
+          <option key={expression} value={expression}>
             {expression}
           </option>
         ))}
       </select>
+
       <input
         className="app__rule app__rule--value"
         placeholder="Rule value"
-        value={newSelectedRule.value}
+        value={newSelectedRule.value || ""}
         onChange={(e) =>
           setNewSelectedRule({ ...newSelectedRule, value: e.target.value })
         }

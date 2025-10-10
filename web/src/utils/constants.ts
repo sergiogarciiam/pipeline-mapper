@@ -79,8 +79,12 @@ export const EXAMPLE: PipelineData = {
       rules: [
         {
           type: "if",
-          value:
-            '$CI_PIPELINE_SOURCE == "push" || $CI_COMMIT_BRANCH == "develop"',
+          value: '$CI_PIPELINE_SOURCE == "push"',
+          when: "manual",
+        },
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "develop"',
           when: "manual",
         },
       ],
@@ -230,6 +234,19 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [".templates"],
       noExistExtends: [".non_existent_template"],
+    },
+    noRule: {
+      stage: "build",
+      rules: [
+        {
+          type: "unknown",
+          when: "always",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
     },
   },
   hiddenJobs: [

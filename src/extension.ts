@@ -2,11 +2,12 @@ import * as vscode from "vscode";
 import * as YAML from "yaml";
 import * as fs from "fs";
 import { Job, PipelineData, Rule } from "./types";
+import path from "path";
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
     "pipeline-mapper.generatePipelineMapper",
-    () => {
+    async () => {
       const editor = vscode.window.activeTextEditor;
 
       if (!editor) {
@@ -32,21 +33,24 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
 
-      panel.webview.html = getWebviewContent(context, panel, fileContent);
+      const jsonContent = YAML.parse(fileContent);
+      const initialData = processData(jsonContent);
+      const mergedData = await processIncludes(
+        initialData,
+        path.dirname(editor.document.fileName)
+      );
+      panel.webview.html = await getWebviewContent(context, panel, mergedData);
     }
   );
 
   context.subscriptions.push(disposable);
 }
 
-function getWebviewContent(
+async function getWebviewContent(
   context: vscode.ExtensionContext,
   panel: vscode.WebviewPanel,
-  fileContent: string
-): string {
-  const jsonContent = YAML.parse(fileContent);
-  const processedData = processData(jsonContent);
-
+  mergedData: PipelineData
+) {
   const webDist = vscode.Uri.joinPath(
     context.extensionUri,
     "web",
@@ -76,22 +80,23 @@ function getWebviewContent(
             <link rel="stylesheet" href="${cssSrc}" />
           </head>
 										<script>
-              window.pipelineData = ${JSON.stringify(processedData)};
+              window.pipelineData = ${JSON.stringify(mergedData)};
           </script>
           <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
             <div id="root"></div>
-            <div><pre>${JSON.stringify(processedData, null, 2)}</pre></div>
+            <div><pre>${JSON.stringify(mergedData, null, 2)}</pre></div>
           </body>
+          <script src="${scriptSrc}"></script>
         </html>
         `;
-  //<script src="${scriptSrc}"></script>
 }
 
 function processData(data: PipelineData) {
   const stages = data.stages || [];
   const hiddenJobs = Object.keys(data).filter((job) => job.startsWith("."));
   const jobs: Record<string, any> = {};
+  const include = data.include || [];
 
   Object.keys(data).forEach((jobName) => {
     if (isJob(jobName)) {
@@ -105,7 +110,15 @@ function processData(data: PipelineData) {
     }
   });
 
-  return { stages, jobs, hiddenJobs };
+  return { stages, jobs, hiddenJobs, include };
+}
+
+async function processIncludes(
+  data: PipelineData,
+  baseDir: string,
+  visited: Set<string> = new Set()
+) {
+  return data;
 }
 
 function isJob(jobName: any): boolean {
@@ -188,24 +201,34 @@ function normalizeRules(rules: any[]): Rule[] {
     return [];
   }
 
-  return rules.map((rule) => {
-    if (rule.if) {
-      return { type: "if", value: rule.if, when: rule.when || "on_success" };
+  const normalized: Rule[] = [];
+
+  rules.forEach((rule) => {
+    const when = rule.when || "on_success";
+
+    if (typeof rule.if === "string") {
+      if (
+        rule.if.includes("&&") ||
+        rule.if.includes("(") ||
+        rule.if.includes(")")
+      ) {
+        normalized.push({ type: "unknown", when });
+      } else {
+        const conditions = rule.if.split("||").map((c: string) => c.trim());
+        conditions.forEach((condition: string) => {
+          normalized.push({ type: "if", value: condition, when });
+        });
+      }
     } else if (rule.exists) {
-      return {
-        type: "exists",
-        value: rule.exists,
-        when: rule.when || "on_success",
-      };
+      normalized.push({ type: "exists", value: rule.exists, when });
     } else if (rule.changes) {
-      return {
-        type: "changes",
-        value: rule.changes,
-        when: rule.when || "on_success",
-      };
+      normalized.push({ type: "changes", value: rule.changes, when });
+    } else {
+      normalized.push({ type: "unknown", when });
     }
-    return { type: "unknown", when: rule.when || "on_success" };
   });
+
+  return normalized;
 }
 
 function normalizeExtends(extendsField: any): string[] {

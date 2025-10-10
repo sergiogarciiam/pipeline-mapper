@@ -17,4 +17,5 @@ export interface PipelineData {
   stages: string[];
   jobs: Record<string, Job>;
   hiddenJobs: string[];
+  include: string[];
 }

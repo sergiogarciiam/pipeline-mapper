@@ -1,8 +1,24 @@
-export interface Rules {
-  type?: string;
-  value?: string | string[];
-  when?: string;
-}
+export type Rules =
+  | {
+      type: "if";
+      value: string;
+      when: string;
+    }
+  | {
+      type: "changes";
+      value: string[];
+      when: string;
+    }
+  | {
+      type: "exists";
+      value: string[];
+      when: string;
+    }
+  | {
+      type: "unknown";
+      value?: null;
+      when: string;
+    };
 
 export interface SelectedRule {
   type: string;
@@ -13,7 +29,7 @@ export interface SelectedRule {
 
 export interface Job {
   stage?: string;
-  rules?: Rules[];
+  rules: Rules[];
   needs?: string[];
   noExistNeeds?: string[];
   extends?: string[];

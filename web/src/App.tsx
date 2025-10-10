@@ -15,9 +15,7 @@ function App() {
   const [jobSelected, setJobSelected] = useState<string>("");
   const arrows = usePipelineArrows(pipelineData, jobRefs);
   const [isShowArrows, setIsShowArrows] = useState(false);
-  const [selectedRules, setSelectedRules] = useState<SelectedRule[] | null>(
-    null
-  );
+  const [selectedRules, setSelectedRules] = useState<SelectedRule[]>([]);
 
   const [newPipelineData] = usePipeline(pipelineData, selectedRules);
 
