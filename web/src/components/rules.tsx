@@ -32,7 +32,16 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
   };
 
   return (
-    <div>
+    <div className="app__rules-container">
+      <div className="app__rules-header">
+        <h2>Rules</h2>
+        <div>
+          {newSelectedRules.length !== 0 && (
+            <button onClick={handleApplyRules}>Apply rules</button>
+          )}
+          <button onClick={handleAddRule}>Add new rule</button>
+        </div>
+      </div>
       {newSelectedRules.length !== 0 &&
         newSelectedRules.map((rule, index) => (
           <RuleForm
@@ -44,12 +53,6 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
             handleRemoveRule={() => handleRemoveRule(index)}
           />
         ))}
-
-      <button onClick={handleAddRule}>Add new rule</button>
-
-      {newSelectedRules.length !== 0 && (
-        <button onClick={handleApplyRules}>Apply rules</button>
-      )}
     </div>
   );
 };

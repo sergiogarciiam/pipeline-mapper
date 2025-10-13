@@ -13,60 +13,60 @@ const RuleForm = ({
   handleRemoveRule,
 }: RuleFormProps) => {
   return (
-    <div className="rule-form">
-      <select
-        value={newSelectedRule.type}
-        onChange={(e) =>
-          setNewSelectedRule({ ...newSelectedRule, type: e.target.value })
-        }
-      >
-        {RULES.map((rule) => (
-          <option key={rule} value={rule}>
-            {rule}
-          </option>
-        ))}
-      </select>
+    <div className="app__rules-rule">
+      <div>
+        <select
+          value={newSelectedRule.type}
+          onChange={(e) =>
+            setNewSelectedRule({ ...newSelectedRule, type: e.target.value })
+          }
+        >
+          {RULES.map((rule) => (
+            <option key={rule} value={rule}>
+              {rule}
+            </option>
+          ))}
+        </select>
 
-      <select
-        value={newSelectedRule.variable}
-        onChange={(e) =>
-          setNewSelectedRule({ ...newSelectedRule, variable: e.target.value })
-        }
-        disabled={newSelectedRule.type !== "if"}
-      >
-        {VARIABLES.map((variable) => (
-          <option key={variable} value={variable}>
-            {variable}
-          </option>
-        ))}
-      </select>
+        <select
+          value={newSelectedRule.variable}
+          onChange={(e) =>
+            setNewSelectedRule({ ...newSelectedRule, variable: e.target.value })
+          }
+          disabled={newSelectedRule.type !== "if"}
+        >
+          {VARIABLES.map((variable) => (
+            <option key={variable} value={variable}>
+              {variable}
+            </option>
+          ))}
+        </select>
 
-      <select
-        value={newSelectedRule.expression}
-        onChange={(e) =>
-          setNewSelectedRule({
-            ...newSelectedRule,
-            expression: e.target.value,
-          })
-        }
-        disabled={newSelectedRule.type !== "if"}
-      >
-        {EXPRESSIONS.map((expression) => (
-          <option key={expression} value={expression}>
-            {expression}
-          </option>
-        ))}
-      </select>
+        <select
+          value={newSelectedRule.expression}
+          onChange={(e) =>
+            setNewSelectedRule({
+              ...newSelectedRule,
+              expression: e.target.value,
+            })
+          }
+          disabled={newSelectedRule.type !== "if"}
+        >
+          {EXPRESSIONS.map((expression) => (
+            <option key={expression} value={expression}>
+              {expression}
+            </option>
+          ))}
+        </select>
 
-      <input
-        className="app__rule app__rule--value"
-        placeholder="Rule value"
-        value={newSelectedRule.value || ""}
-        onChange={(e) =>
-          setNewSelectedRule({ ...newSelectedRule, value: e.target.value })
-        }
-      />
-
+        <input
+          placeholder="Rule value"
+          value={newSelectedRule.value || ""}
+          onChange={(e) =>
+            setNewSelectedRule({ ...newSelectedRule, value: e.target.value })
+          }
+        />
+      </div>
       <button onClick={handleRemoveRule}>Remove rule</button>
     </div>
   );

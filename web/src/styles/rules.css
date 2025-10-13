@@ -1,0 +1,44 @@
+.app__rules-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 150px;
+  width: 40%;
+  overflow-y: auto;
+  position: relative;
+  padding: 10px;
+  background-color: color-mix(
+    in srgb,
+    var(--vscode-editor-background) 90%,
+    black
+  );
+}
+
+.app__rules-header {
+  position: sticky;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app__rules-header > div {
+  display: flex;
+  gap: 10px;
+}
+
+.app__rules-rule {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  background-color: color-mix(
+    in srgb,
+    var(--vscode-editor-background) 90%,
+    white
+  );
+}
+
+.app__rules-rule > div {
+  display: flex;
+  gap: 10px;
+}

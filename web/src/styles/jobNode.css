@@ -5,11 +5,13 @@
   margin: 10px 0;
   cursor: pointer;
   transition: filter 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  max-height: 100px;
 }
 
 .job-node__content {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 6px;
 }
 
@@ -26,5 +28,4 @@
 
 .job-node--undefined {
   opacity: 0.3;
-  border: 1px solid red;
 }

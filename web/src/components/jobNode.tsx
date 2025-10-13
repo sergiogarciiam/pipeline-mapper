@@ -1,5 +1,6 @@
 import { forwardRef, type Dispatch, type SetStateAction } from "react";
 import type { Job } from "../utils/types";
+import { DangerIcon } from "../utils/icons";
 
 interface JobNodeProps {
   jobId: string;
@@ -32,7 +33,7 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
           {(hasNoExistNeeds ||
             hasNoExistExtends ||
             hasNeedsErros ||
-            isWrongStage) && <p>⚠️</p>}
+            isWrongStage) && <DangerIcon></DangerIcon>}
         </div>
       </div>
     );

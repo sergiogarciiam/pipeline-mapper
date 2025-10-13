@@ -4,9 +4,3 @@
   flex-direction: column;
   gap: 10px;
 }
-
-.stage-column__title {
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}

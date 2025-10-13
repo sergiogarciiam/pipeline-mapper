@@ -7,6 +7,7 @@ import "./styles/app.css";
 import "./styles/stageColumn.css";
 import "./styles/jobNode.css";
 import "./styles/footer.css";
+import "./styles/rules.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

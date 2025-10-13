@@ -22,13 +22,13 @@ function App() {
   return (
     <div className="app">
       <div className="app__controls">
+        <button onClick={() => setIsShowArrows(!isShowArrows)}>
+          Show Dependencies
+        </button>
         <Rules
           selectedRules={selectedRules}
           setSelectedRules={setSelectedRules}
         ></Rules>
-        <button onClick={() => setIsShowArrows(!isShowArrows)}>
-          Show Dependencies
-        </button>
       </div>
 
       {isShowArrows && <ArrowsCanvas arrows={arrows} />}
