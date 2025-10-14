@@ -21,7 +21,7 @@ const ArrowsCanvas = ({ arrows }: ArrowsCanvasProps) => {
           y1={arrow.start.top + arrow.start.height / 2}
           x2={arrow.end.left}
           y2={arrow.end.top + arrow.end.height / 2}
-          stroke="#666"
+          stroke="#fff"
           strokeWidth="1"
           opacity={0.6}
           markerEnd="url(#arrowhead)"
@@ -36,7 +36,7 @@ const ArrowsCanvas = ({ arrows }: ArrowsCanvasProps) => {
           refY="3.5"
           orient="auto"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+          <polygon points="0 0, 10 3.5, 0 7" fill="#fff" />
         </marker>
       </defs>
     </svg>

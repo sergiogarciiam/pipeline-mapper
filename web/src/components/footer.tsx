@@ -3,47 +3,49 @@ import type { PipelineData } from "../utils/types";
 
 interface FooterProps {
   pipelineData: PipelineData;
-  jobSelected: string;
+  selectedJobId: string | null;
+  hoveredJobId: string | null;
 }
 
-const Footer = ({ pipelineData, jobSelected }: FooterProps) => {
-  const errors = useErrors(pipelineData, jobSelected);
+const Footer = ({ pipelineData, selectedJobId, hoveredJobId }: FooterProps) => {
+  const activeJobId = selectedJobId ?? hoveredJobId;
+  const errors = useErrors(pipelineData, activeJobId);
 
   return (
     <div className="app__footer">
       <div className="app__footer-job-info">
-        {jobSelected ? (
+        {activeJobId ? (
           <>
-            <h2>{jobSelected}</h2>
+            <h2>{activeJobId}</h2>
             <p>
               <strong>Stage:</strong>{" "}
-              {pipelineData.jobs[jobSelected]
-                ? pipelineData.jobs[jobSelected].stage
+              {pipelineData.jobs[activeJobId]
+                ? pipelineData.jobs[activeJobId].stage
                 : "N/A"}
             </p>
             <p>
               <strong>Extends:</strong>{" "}
-              {pipelineData.jobs[jobSelected] &&
-              pipelineData.jobs[jobSelected].extends &&
-              pipelineData.jobs[jobSelected].extends.length > 0
-                ? pipelineData.jobs[jobSelected].extends?.join(", ")
+              {pipelineData.jobs[activeJobId] &&
+              pipelineData.jobs[activeJobId].extends &&
+              pipelineData.jobs[activeJobId].extends.length > 0
+                ? pipelineData.jobs[activeJobId].extends?.join(", ")
                 : "N/A"}
             </p>
             <p>
               <strong>Needs:</strong>{" "}
-              {pipelineData.jobs[jobSelected] &&
-              pipelineData.jobs[jobSelected].needs &&
-              pipelineData.jobs[jobSelected].needs.length > 0
-                ? pipelineData.jobs[jobSelected].needs?.join(", ")
+              {pipelineData.jobs[activeJobId] &&
+              pipelineData.jobs[activeJobId].needs &&
+              pipelineData.jobs[activeJobId].needs.length > 0
+                ? pipelineData.jobs[activeJobId].needs?.join(", ")
                 : "N/A"}
             </p>
             <div className="app__footer-rules">
               <strong>Rules:</strong>
-              {pipelineData.jobs[jobSelected] &&
-              pipelineData.jobs[jobSelected].rules &&
-              pipelineData.jobs[jobSelected].rules.length > 0 ? (
+              {pipelineData.jobs[activeJobId] &&
+              pipelineData.jobs[activeJobId].rules &&
+              pipelineData.jobs[activeJobId].rules.length > 0 ? (
                 <ul>
-                  {pipelineData.jobs[jobSelected].rules?.map((rule, index) => (
+                  {pipelineData.jobs[activeJobId].rules?.map((rule, index) => (
                     <li key={index}>
                       {rule.type} <code>{rule.value}</code>, then{" "}
                       <code>{rule.when}</code>
@@ -51,7 +53,7 @@ const Footer = ({ pipelineData, jobSelected }: FooterProps) => {
                   ))}
                 </ul>
               ) : (
-                "N/A"
+                " N/A"
               )}
             </div>
           </>

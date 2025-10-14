@@ -5,35 +5,60 @@ import { DangerIcon } from "../utils/icons";
 interface JobNodeProps {
   jobId: string;
   jobData: Job;
-  jobSelected: string;
-  setJobSelected: Dispatch<SetStateAction<string>>;
+  selectedJobId: string | null;
+  setSelectedJobId: Dispatch<SetStateAction<string | null>>;
+  hoveredJobId: string | null;
+  setHoveredJobId: Dispatch<SetStateAction<string | null>>;
 }
-
 const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
-  ({ jobId, jobData, jobSelected, setJobSelected }, ref) => {
+  (
+    {
+      jobId,
+      jobData,
+      selectedJobId,
+      setSelectedJobId,
+      hoveredJobId,
+      setHoveredJobId,
+    },
+    ref
+  ) => {
     const hasNoExistExtends =
       jobData.noExistExtends && jobData.noExistExtends.length > 0;
     const hasNoExistNeeds =
       jobData.noExistNeeds && jobData.noExistNeeds.length > 0;
-    const hasNeedsErros = jobData.needsErrors && jobData.needsErrors.length > 0;
+    const hasNeedsErrors =
+      jobData.needsErrors && jobData.needsErrors.length > 0;
+    const isWrongStage = !jobData.stage;
 
-    const isWrongStage = jobData.stage === undefined || jobData.stage === "";
+    const isSelected = selectedJobId === jobId;
+    const isHovered = hoveredJobId === jobId;
+    const isBlurred =
+      (selectedJobId && selectedJobId !== jobId) ||
+      (!selectedJobId && hoveredJobId && hoveredJobId !== jobId);
+
+    const handleClick = () => {
+      setSelectedJobId(isSelected ? null : jobId);
+    };
 
     return (
       <div
         ref={ref}
-        className={`job-node ${jobSelected ? "job-node--active" : ""} ${
-          jobSelected && jobSelected !== jobId ? "job-node--blur" : ""
-        } ${jobData.isDisabled === true ? "job-node--undefined" : ""}`}
-        onMouseEnter={() => setJobSelected(jobId)}
-        onMouseLeave={() => setJobSelected("")}
+        className={`job-node
+          ${isSelected ? "job-node--active" : ""}
+          ${isHovered ? "job-node--hover" : ""}
+          ${isBlurred ? "job-node--blur" : ""}
+          ${jobData.isDisabled ? "job-node--undefined" : ""}
+        `}
+        onMouseEnter={() => !selectedJobId && setHoveredJobId(jobId)}
+        onMouseLeave={() => setHoveredJobId(null)}
+        onClick={handleClick}
       >
         <div className="job-node__content">
           {jobId}
           {(hasNoExistNeeds ||
             hasNoExistExtends ||
-            hasNeedsErros ||
-            isWrongStage) && <DangerIcon></DangerIcon>}
+            hasNeedsErrors ||
+            isWrongStage) && <DangerIcon />}
         </div>
       </div>
     );

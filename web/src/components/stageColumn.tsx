@@ -6,16 +6,20 @@ interface StageColumnProps {
   stage: string;
   pipelineData: PipelineData;
   jobRefs: RefObject<{ [key: string]: HTMLDivElement }>;
-  jobSelected: string;
-  setJobSelected: Dispatch<SetStateAction<string>>;
+  selectedJobId: string | null;
+  setSelectedJobId: Dispatch<SetStateAction<string | null>>;
+  hoveredJobId: string | null;
+  setHoveredJobId: Dispatch<SetStateAction<string | null>>;
 }
 
 const StageColumn = ({
   stage,
   pipelineData,
   jobRefs,
-  jobSelected,
-  setJobSelected,
+  selectedJobId,
+  setSelectedJobId,
+  hoveredJobId,
+  setHoveredJobId,
 }: StageColumnProps) => {
   const jobs = pipelineData.jobs || {};
 
@@ -34,8 +38,10 @@ const StageColumn = ({
             }}
             jobId={jobName}
             jobData={jobs[jobName] as Job}
-            jobSelected={jobSelected}
-            setJobSelected={setJobSelected}
+            selectedJobId={selectedJobId}
+            setSelectedJobId={setSelectedJobId}
+            hoveredJobId={hoveredJobId}
+            setHoveredJobId={setHoveredJobId}
           />
         );
       })}

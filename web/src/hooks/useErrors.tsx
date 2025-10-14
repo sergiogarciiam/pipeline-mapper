@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import type { Job, PipelineData } from "../utils/types";
 
-export function useErrors(pipelineData: PipelineData, jobSelected: string) {
+export function useErrors(
+  pipelineData: PipelineData,
+  selectedJobId: string | null
+) {
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const newErrors: string[] = [];
 
-    if (jobSelected !== "") {
-      const selectedJob = pipelineData.jobs[jobSelected];
+    if (selectedJobId) {
+      const selectedJob = pipelineData.jobs[selectedJobId];
 
       if (selectedJob) {
-        fillErrorsArray(pipelineData, selectedJob, newErrors, jobSelected);
+        fillErrorsArray(pipelineData, selectedJob, newErrors, selectedJobId);
       }
     } else {
       Object.keys(pipelineData.jobs).forEach((jobName: string) => {
@@ -21,7 +24,7 @@ export function useErrors(pipelineData: PipelineData, jobSelected: string) {
     }
 
     setErrors(newErrors);
-  }, [pipelineData, jobSelected]);
+  }, [pipelineData, selectedJobId]);
 
   return errors;
 }

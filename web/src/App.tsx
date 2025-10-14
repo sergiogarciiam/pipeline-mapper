@@ -12,26 +12,35 @@ function App() {
   const pipelineData =
     (window as { pipelineData?: PipelineData }).pipelineData || EXAMPLE;
   const jobRefs = useRef<{ [key: string]: HTMLDivElement }>({});
-  const [jobSelected, setJobSelected] = useState<string>("");
-  const arrows = usePipelineArrows(pipelineData, jobRefs);
-  const [isShowArrows, setIsShowArrows] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [hoveredJobId, setHoveredJobId] = useState<string | null>(null);
+  const [isShowAllDependencies, setIsShowAllDependencies] = useState(false);
   const [selectedRules, setSelectedRules] = useState<SelectedRule[]>([]);
-
   const [newPipelineData] = usePipeline(pipelineData, selectedRules);
 
+  const arrows = usePipelineArrows(
+    pipelineData,
+    jobRefs,
+    isShowAllDependencies,
+    selectedJobId,
+    hoveredJobId
+  );
   return (
     <div className="app">
       <div className="app__controls">
-        <button onClick={() => setIsShowArrows(!isShowArrows)}>
-          Show Dependencies
-        </button>
         <Rules
           selectedRules={selectedRules}
           setSelectedRules={setSelectedRules}
         ></Rules>
+        <button
+          className="app__show-dependencies-button"
+          onClick={() => setIsShowAllDependencies(!isShowAllDependencies)}
+        >
+          Show Dependencies
+        </button>
       </div>
 
-      {isShowArrows && <ArrowsCanvas arrows={arrows} />}
+      <ArrowsCanvas arrows={arrows} />
 
       <div className="app__stages">
         {newPipelineData.stages.length > 0 ? (
@@ -41,15 +50,21 @@ function App() {
               stage={stage}
               pipelineData={newPipelineData}
               jobRefs={jobRefs}
-              jobSelected={jobSelected}
-              setJobSelected={setJobSelected}
+              selectedJobId={selectedJobId}
+              setSelectedJobId={setSelectedJobId}
+              hoveredJobId={hoveredJobId}
+              setHoveredJobId={setHoveredJobId}
             />
           ))
         ) : (
           <p>Loading...</p>
         )}
       </div>
-      <Footer pipelineData={newPipelineData} jobSelected={jobSelected}></Footer>
+      <Footer
+        pipelineData={newPipelineData}
+        selectedJobId={selectedJobId}
+        hoveredJobId={hoveredJobId}
+      ></Footer>
     </div>
   );
 }

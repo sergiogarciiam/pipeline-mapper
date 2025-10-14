@@ -1,8 +1,7 @@
 .app {
   position: relative;
-  padding: 15px;
   display: grid;
-  grid-template-rows: 1fr 7fr 2fr;
+  grid-template-rows: 1.5fr 7fr 1.5fr;
   gap: 20px;
   width: 100vw;
   height: 100vh;
@@ -10,10 +9,19 @@
   align-items: center;
 }
 
+.app__show-dependencies-button {
+  align-self: flex-start;
+}
+
 .app__controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: color-mix(
+    in srgb,
+    var(--vscode-editor-background) 90%,
+    black
+  );
 }
 
 .app__stages {
@@ -21,4 +29,5 @@
   gap: 50px;
   overflow-x: auto;
   padding-bottom: 10px;
+  margin: 0 auto;
 }
