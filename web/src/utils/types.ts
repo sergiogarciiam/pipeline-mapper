@@ -36,6 +36,7 @@ export interface Job {
   noExistExtends?: string[];
   isDisabled?: boolean;
   needsErrors?: string[];
+  includePath: string;
 }
 
 export interface PipelineData {
@@ -44,4 +45,6 @@ export interface PipelineData {
   jobs: {
     [jobName: string]: Job;
   };
+  include: string[];
+  noExistInclude: string[];
 }

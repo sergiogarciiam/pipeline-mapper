@@ -11,6 +11,7 @@ export interface Job {
   noExistNeeds: string[];
   extends: string[];
   noExistExtends: string[];
+  includePath: string;
 }
 
 export interface PipelineData {
@@ -18,4 +19,5 @@ export interface PipelineData {
   jobs: Record<string, Job>;
   hiddenJobs: string[];
   include: string[];
+  noExistInclude: string[];
 }

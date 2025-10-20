@@ -18,6 +18,12 @@ const Footer = ({ pipelineData, selectedJobId, hoveredJobId }: FooterProps) => {
           <>
             <h2>{activeJobId}</h2>
             <p>
+              <strong>Include:</strong>{" "}
+              {pipelineData.jobs[activeJobId]
+                ? pipelineData.jobs[activeJobId].includePath
+                : "N/A"}
+            </p>
+            <p>
               <strong>Stage:</strong>{" "}
               {pipelineData.jobs[activeJobId]
                 ? pipelineData.jobs[activeJobId].stage

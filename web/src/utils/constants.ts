@@ -3,6 +3,75 @@ import type { PipelineData } from "./types";
 export const EXAMPLE: PipelineData = {
   stages: ["setup", "lint", "build", "test", "deploy", "monitor", "cleanup"],
   jobs: {
+    generate_docs: {
+      stage: "build",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "main"',
+          when: "always",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+      includePath: "./example2.yml",
+    },
+    code_quality: {
+      stage: "lint",
+      rules: [
+        {
+          type: "if",
+          value: "$CI_COMMIT_BRANCH =~ /^release\\//",
+          when: "manual",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+      includePath: "./example2.yml",
+    },
+    cleanup_temp: {
+      stage: "cleanup",
+      rules: [],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+      includePath: "./example2.yml",
+    },
+    setup_db: {
+      stage: "setup",
+      rules: [
+        {
+          type: "if",
+          value: '$CI_COMMIT_BRANCH == "develop"',
+          when: "always",
+        },
+      ],
+      needs: [],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+      includePath: "./example1.yml",
+    },
+    seed_data: {
+      stage: "setup",
+      rules: [
+        {
+          type: "if",
+          value: "$CI_COMMIT_BRANCH =~ /^feature\\//",
+          when: "manual",
+        },
+      ],
+      needs: ["setup_db"],
+      noExistNeeds: [],
+      extends: [],
+      noExistExtends: [],
+      includePath: "./example1.yml",
+    },
     install: {
       stage: "setup",
       rules: [
@@ -16,6 +85,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [".setup_template"],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     lint: {
       stage: "lint",
@@ -35,6 +105,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [".templates"],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     build_app: {
       rules: [
@@ -47,6 +118,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: ["abc"],
       extends: [".build_template"],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     build_docs: {
       rules: [
@@ -59,6 +131,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: ["abc"],
       extends: [".build_template"],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     build_docker: {
       stage: "build",
@@ -73,6 +146,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: ["noNeed"],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     unit_tests: {
       stage: "test",
@@ -92,6 +166,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: ["nop"],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     integration_tests: {
       stage: "test",
@@ -106,6 +181,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     smoke_tests: {
       stage: "test",
@@ -120,6 +196,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     deploy_staging: {
       stage: "deploy",
@@ -134,6 +211,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     deploy_prod: {
       stage: "deploy",
@@ -153,6 +231,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     deploy_hotfix: {
       stage: "deploy",
@@ -167,6 +246,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     monitoring: {
       stage: "monitor",
@@ -181,6 +261,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     cleanup: {
       stage: "cleanup",
@@ -189,6 +270,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     orphan_job: {
       rules: [],
@@ -196,6 +278,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     ghost_job: {
       stage: "ghost",
@@ -204,6 +287,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     variable_job: {
       stage: "build",
@@ -212,6 +296,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     matrix_build: {
       stage: "build",
@@ -226,6 +311,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
     noExtendsExist: {
       stage: "build",
@@ -234,6 +320,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [".templates"],
       noExistExtends: [".non_existent_template"],
+      includePath: "test.gitlab.yml",
     },
     noRule: {
       stage: "build",
@@ -247,6 +334,7 @@ export const EXAMPLE: PipelineData = {
       noExistNeeds: [],
       extends: [],
       noExistExtends: [],
+      includePath: "test.gitlab.yml",
     },
   },
   hiddenJobs: [
@@ -255,4 +343,6 @@ export const EXAMPLE: PipelineData = {
     ".build_template",
     ".setup_template",
   ],
+  include: ["./example1.yml", "./example2.yml", "./noExist.yml"],
+  noExistInclude: ["./noExist.yml"],
 };

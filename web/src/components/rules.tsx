@@ -18,7 +18,6 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
   const handleRemoveRule = (index: number) => {
     const newRules = newSelectedRules.filter((_, i) => i !== index);
     setNewSelectedRules(newRules);
-    setSelectedRules(newRules);
   };
 
   const handleUpdateRule = (index: number, updatedRule: SelectedRule) => {
@@ -36,9 +35,7 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
       <div className="app__rules-header">
         <h2>Rules</h2>
         <div>
-          {newSelectedRules.length !== 0 && (
-            <button onClick={handleApplyRules}>Apply rules</button>
-          )}
+          <button onClick={handleApplyRules}>Apply rules</button>
           <button onClick={handleAddRule}>Add new rule</button>
         </div>
       </div>

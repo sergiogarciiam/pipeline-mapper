@@ -32,9 +32,9 @@ export function activate(context: vscode.ExtensionContext) {
           enableScripts: true,
         }
       );
-
       const jsonContent = YAML.parse(fileContent);
-      const initialData = processData(jsonContent);
+      const rootFileName = path.basename(editor.document.fileName);
+      const initialData = processData(jsonContent, rootFileName);
       const mergedData = await processIncludes(
         initialData,
         path.dirname(editor.document.fileName)
@@ -92,15 +92,16 @@ async function getWebviewContent(
         `;
 }
 
-function processData(data: PipelineData) {
+function processData(data: PipelineData, includePath: string) {
   const stages = data.stages || [];
   const hiddenJobs = Object.keys(data).filter((job) => job.startsWith("."));
   const jobs: Record<string, any> = {};
   const include = data.include || [];
+  const noExistInclude: string[] = [];
 
   Object.keys(data).forEach((jobName) => {
     if (isJob(jobName)) {
-      const job = processJob(jobName, data);
+      const job = processJob(jobName, data, includePath);
 
       if (!job) {
         return;
@@ -110,7 +111,7 @@ function processData(data: PipelineData) {
     }
   });
 
-  return { stages, jobs, hiddenJobs, include };
+  return { stages, jobs, hiddenJobs, include, noExistInclude };
 }
 
 async function processIncludes(
@@ -118,7 +119,67 @@ async function processIncludes(
   baseDir: string,
   visited: Set<string> = new Set()
 ) {
-  return data;
+  const includes = Array.isArray(data.include) ? data.include : [];
+  let mergedData = { ...data };
+
+  for (const includePath of includes) {
+    const resolvedPath = path.resolve(baseDir, includePath);
+    if (visited.has(resolvedPath)) {
+      continue;
+    }
+
+    visited.add(resolvedPath);
+
+    if (!fs.existsSync(resolvedPath)) {
+      mergedData.noExistInclude.push(includePath);
+      continue;
+    }
+
+    const fileContent = fs.readFileSync(resolvedPath, "utf8");
+    const includedRaw = YAML.parse(fileContent);
+    const includedData = processData(includedRaw, includePath);
+
+    const includedMerged = await processIncludes(
+      includedData,
+      path.dirname(resolvedPath),
+      visited
+    );
+
+    mergedData = {
+      ...mergedData,
+      ...includedMerged,
+      jobs: {
+        ...(includedMerged.jobs || {}),
+        ...(mergedData.jobs || {}),
+      },
+      stages: Array.from(
+        new Set([
+          ...(mergedData.stages || []),
+          ...(includedMerged.stages || []),
+        ])
+      ),
+      hiddenJobs: Array.from(
+        new Set([
+          ...(mergedData.hiddenJobs || []),
+          ...(includedMerged.hiddenJobs || []),
+        ])
+      ),
+      include: Array.from(
+        new Set([
+          ...(mergedData.include || []),
+          ...(includedMerged.include || []),
+        ])
+      ),
+      noExistInclude: Array.from(
+        new Set([
+          ...(mergedData.noExistInclude || []),
+          ...(includedMerged.noExistInclude || []),
+        ])
+      ),
+    };
+  }
+
+  return mergedData;
 }
 
 function isJob(jobName: any): boolean {
@@ -140,6 +201,7 @@ function isJob(jobName: any): boolean {
 function processJob(
   jobName: string,
   data: Record<string, any>,
+  includePath: string,
   resolvedJobs: Record<string, Job> = {},
   stack: string[] = []
 ): Job | null {
@@ -161,10 +223,11 @@ function processJob(
     noExistNeeds: missingNeeds,
     extends: normalizeExtends(job.extends),
     noExistExtends: [],
+    includePath,
   };
 
   if (job.extends) {
-    resolveExtendsHierarchy(processed, data, resolvedJobs, stack);
+    resolveExtendsHierarchy(processed, data, includePath, resolvedJobs, stack);
   }
 
   resolvedJobs[jobName] = processed;
@@ -242,6 +305,7 @@ function normalizeExtends(extendsField: any): string[] {
 function resolveExtendsHierarchy(
   processed: Job,
   data: Record<string, any>,
+  includePath: string,
   resolvedJobs: Record<string, Job>,
   stack: string[]
 ) {
@@ -258,7 +322,13 @@ function resolveExtendsHierarchy(
     }
 
     stack.push(parent);
-    const parentJob = processJob(parent, data, resolvedJobs, stack);
+    const parentJob = processJob(
+      parent,
+      data,
+      includePath,
+      resolvedJobs,
+      stack
+    );
 
     if (!parentJob) {
       processed.noExistExtends.push(parent);

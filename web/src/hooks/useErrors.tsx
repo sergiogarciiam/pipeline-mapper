@@ -23,6 +23,8 @@ export function useErrors(
       });
     }
 
+    fillIncludesErrors(pipelineData, newErrors);
+
     setErrors(newErrors);
   }, [pipelineData, selectedJobId]);
 
@@ -46,6 +48,7 @@ function fillErrorsArray(
       newErrors.push(`Job "${jobName}" needs undefined job "${need}"`);
     });
   }
+
   if (Array.isArray(job.noExistExtends)) {
     job.noExistExtends.forEach((extend) => {
       newErrors.push(`Job "${jobName}" extends undefined template "${extend}"`);
@@ -59,4 +62,10 @@ function fillErrorsArray(
       );
     });
   }
+}
+
+function fillIncludesErrors(pipelineData: PipelineData, newErrors: string[]) {
+  pipelineData.noExistInclude.forEach((include) => {
+    newErrors.push(`Include "${include}" doesn't exist`);
+  });
 }
