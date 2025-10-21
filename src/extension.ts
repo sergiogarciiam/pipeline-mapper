@@ -5,6 +5,8 @@ import { Job, PipelineData, Rule } from "./types";
 import path from "path";
 
 export function activate(context: vscode.ExtensionContext) {
+  let panel: vscode.WebviewPanel | undefined;
+
   const disposable = vscode.commands.registerCommand(
     "pipeline-mapper.generatePipelineMapper",
     async () => {
@@ -22,8 +24,6 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      const fileContent = editor.document.getText();
-
       const panel = vscode.window.createWebviewPanel(
         "pipelineMapper",
         "Pipeline Mapper",
@@ -32,6 +32,8 @@ export function activate(context: vscode.ExtensionContext) {
           enableScripts: true,
         }
       );
+
+      const fileContent = editor.document.getText();
       const jsonContent = YAML.parse(fileContent);
       const rootFileName = path.basename(editor.document.fileName);
       const initialData = processData(jsonContent, rootFileName);
@@ -43,7 +45,33 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  context.subscriptions.push(disposable);
+  const watcher = vscode.workspace.onDidSaveTextDocument(async (document) => {
+    if (!document.fileName.endsWith("gitlab.yml")) {
+      return;
+    }
+    if (!panel) {
+      return;
+    }
+
+    try {
+      const fileContent = document.getText();
+      const jsonContent = YAML.parse(fileContent);
+      const rootFileName = path.basename(document.fileName);
+      const initialData = processData(jsonContent, rootFileName);
+      const mergedData = await processIncludes(
+        initialData,
+        path.dirname(document.fileName)
+      );
+
+      panel.webview.html = "";
+      panel.webview.html = await getWebviewContent(context, panel, mergedData);
+      vscode.window.showInformationMessage("Pipeline Mapper actualizado ✔️");
+    } catch (err) {
+      vscode.window.showErrorMessage(`Error al recargar el esquema: ${err}`);
+    }
+  });
+
+  context.subscriptions.push(disposable, watcher);
 }
 
 async function getWebviewContent(
@@ -85,7 +113,6 @@ async function getWebviewContent(
           <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
             <div id="root"></div>
-            <div><pre>${JSON.stringify(mergedData, null, 2)}</pre></div>
           </body>
           <script src="${scriptSrc}"></script>
         </html>
@@ -260,9 +287,7 @@ function analyzeNeeds(
 }
 
 function normalizeRules(rules: any[]): Rule[] {
-  if (!Array.isArray(rules)) {
-    return [];
-  }
+  if (!rules) return [];
 
   const normalized: Rule[] = [];
 
@@ -283,9 +308,17 @@ function normalizeRules(rules: any[]): Rule[] {
         });
       }
     } else if (rule.exists) {
-      normalized.push({ type: "exists", value: rule.exists, when });
+      const values = Array.isArray(rule.exists) ? rule.exists : [rule.exists];
+      values.forEach((value: string) =>
+        normalized.push({ type: "exists", value, when })
+      );
     } else if (rule.changes) {
-      normalized.push({ type: "changes", value: rule.changes, when });
+      const values = Array.isArray(rule.changes)
+        ? rule.changes
+        : [rule.changes];
+      values.forEach((value: string) =>
+        normalized.push({ type: "changes", value, when })
+      );
     } else {
       normalized.push({ type: "unknown", when });
     }
@@ -345,7 +378,11 @@ function resolveExtendsHierarchy(
 }
 
 function mergeJobInheritance(child: Job, parent: Job): void {
-  child.rules = [...normalizeRules(parent.rules), ...child.rules];
+  const parentRules = Array.isArray(parent.rules)
+    ? parent.rules
+    : normalizeRules(parent.rules);
+
+  child.rules = [...parentRules, ...child.rules];
   child.needs = [...new Set([...parent.needs, ...child.needs])];
   child.noExistNeeds = [
     ...new Set([...parent.noExistNeeds, ...child.noExistNeeds]),

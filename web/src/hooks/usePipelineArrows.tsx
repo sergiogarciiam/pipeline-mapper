@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import type { PipelineData } from "../utils/types";
 
 export function usePipelineArrows(
-  pipelineData: PipelineData,
+  pipelineData: PipelineData | undefined,
   jobRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>,
   isShowAllDependencies: boolean,
   selectedJobId: string | null,
@@ -26,6 +26,10 @@ export function usePipelineArrows(
         });
       }
     };
+
+    if (!pipelineData) {
+      return;
+    }
 
     if (activeJobId && pipelineData.jobs[activeJobId]) {
       const job = pipelineData.jobs[activeJobId];

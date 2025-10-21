@@ -1,5 +1,5 @@
 import type { SelectedRule } from "../utils/types";
-import { EXPRESSIONS, RULES, VARIABLES } from "../utils/variables";
+import { EXPRESSIONS, RULES, VARIABLES } from "../utils/constants";
 
 interface RuleFormProps {
   newSelectedRule: SelectedRule;

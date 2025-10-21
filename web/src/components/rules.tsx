@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SelectedRule } from "../utils/types";
 import RuleForm from "./ruleForm";
-import { DEFAULT_RULE } from "../utils/variables";
+import { DEFAULT_RULE } from "../utils/constants";
 
 interface RulesProps {
   selectedRules: SelectedRule[];
@@ -10,6 +10,13 @@ interface RulesProps {
 
 const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
   const [newSelectedRules, setNewSelectedRules] = useState(selectedRules);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    const isDifferent =
+      JSON.stringify(newSelectedRules) !== JSON.stringify(selectedRules);
+    setHasChanges(isDifferent);
+  }, [newSelectedRules, selectedRules]);
 
   const handleAddRule = () => {
     setNewSelectedRules((prev) => [...prev, DEFAULT_RULE]);
@@ -35,7 +42,9 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
       <div className="app__rules-header">
         <h2>Rules</h2>
         <div>
-          <button onClick={handleApplyRules}>Apply rules</button>
+          <button onClick={handleApplyRules} disabled={!hasChanges}>
+            Apply rules
+          </button>
           <button onClick={handleAddRule}>Add new rule</button>
         </div>
       </div>

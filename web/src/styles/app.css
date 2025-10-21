@@ -11,6 +11,7 @@
 
 .app__show-dependencies-button {
   align-self: flex-start;
+  margin: 10px;
 }
 
 .app__controls {

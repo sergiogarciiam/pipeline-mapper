@@ -21,9 +21,10 @@ export function useErrors(
         const job = pipelineData.jobs[jobName];
         fillErrorsArray(pipelineData, job, newErrors, jobName);
       });
+      pipelineData.noExistInclude.forEach((include) => {
+        newErrors.push(`Include "${include}" doesn't exist`);
+      });
     }
-
-    fillIncludesErrors(pipelineData, newErrors);
 
     setErrors(newErrors);
   }, [pipelineData, selectedJobId]);
@@ -62,10 +63,4 @@ function fillErrorsArray(
       );
     });
   }
-}
-
-function fillIncludesErrors(pipelineData: PipelineData, newErrors: string[]) {
-  pipelineData.noExistInclude.forEach((include) => {
-    newErrors.push(`Include "${include}" doesn't exist`);
-  });
 }

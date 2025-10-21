@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { EXAMPLE } from "./utils/constants";
 import StageColumn from "./components/stageColumn";
 import { type PipelineData, type SelectedRule } from "./utils/types";
 import { usePipelineArrows } from "./hooks/usePipelineArrows";
@@ -9,8 +8,7 @@ import Rules from "./components/rules";
 import { usePipeline } from "./hooks/usePipeline";
 
 function App() {
-  const pipelineData =
-    (window as { pipelineData?: PipelineData }).pipelineData || EXAMPLE;
+  const pipelineData = (window as { pipelineData?: PipelineData }).pipelineData;
   const jobRefs = useRef<{ [key: string]: HTMLDivElement }>({});
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [hoveredJobId, setHoveredJobId] = useState<string | null>(null);
@@ -25,19 +23,24 @@ function App() {
     selectedJobId,
     hoveredJobId
   );
+
+  if (!newPipelineData) {
+    return;
+  }
+
   return (
     <div className="app">
       <div className="app__controls">
-        <Rules
-          selectedRules={selectedRules}
-          setSelectedRules={setSelectedRules}
-        ></Rules>
         <button
           className="app__show-dependencies-button"
           onClick={() => setIsShowAllDependencies(!isShowAllDependencies)}
         >
-          Show Dependencies
+          {isShowAllDependencies ? "Hide" : "Show"} Dependencies
         </button>
+        <Rules
+          selectedRules={selectedRules}
+          setSelectedRules={setSelectedRules}
+        ></Rules>
       </div>
 
       <ArrowsCanvas arrows={arrows} />

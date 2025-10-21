@@ -31,6 +31,7 @@
     var(--vscode-editor-background) 90%,
     white
   );
+  border-radius: 8px;
 }
 
 .app__rules-rule > div {

@@ -22,8 +22,8 @@ const ArrowsCanvas = ({ arrows }: ArrowsCanvasProps) => {
           x2={arrow.end.left}
           y2={arrow.end.top + arrow.end.height / 2}
           stroke="#fff"
-          strokeWidth="1"
-          opacity={0.6}
+          strokeWidth="1.5"
+          opacity={0.7}
           markerEnd="url(#arrowhead)"
         />
       ))}

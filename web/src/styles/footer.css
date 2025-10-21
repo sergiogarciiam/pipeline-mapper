@@ -22,6 +22,10 @@
   overflow-y: auto;
 }
 
+.app__footer-job-info-list {
+  margin-left: 20px;
+}
+
 .app__footer-rules ul {
   margin-left: 30px;
 }
@@ -45,8 +49,12 @@
     var(--vscode-editor-background) 90%,
     white
   );
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 6px 10px;
   font-size: 0.9rem;
   transition: all 0.3s ease;
+}
+
+.app__footer-errors-keyword {
+  text-decoration: underline;
 }

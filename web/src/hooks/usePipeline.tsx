@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import type { PipelineData, SelectedRule } from "../utils/types";
 
 export function usePipeline(
-  pipelineData: PipelineData,
+  pipelineData: PipelineData | undefined,
   selectedRules: SelectedRule[]
 ) {
-  const [newPipelineData, setNewPipelineData] =
-    useState<PipelineData>(pipelineData);
+  const [newPipelineData, setNewPipelineData] = useState(pipelineData);
 
   useEffect(() => {
     const updatedPipeline: PipelineData = JSON.parse(
