@@ -1,5 +1,5 @@
-import type { SelectedRule } from "../utils/types";
-import { EXPRESSIONS, RULES, VARIABLES } from "../utils/constants";
+import type { SelectedRule } from '../utils/types';
+import { EXPRESSIONS, RULES, VARIABLES } from '../utils/constants';
 
 interface RuleFormProps {
   newSelectedRule: SelectedRule;
@@ -7,19 +7,13 @@ interface RuleFormProps {
   handleRemoveRule: () => void;
 }
 
-const RuleForm = ({
-  newSelectedRule,
-  setNewSelectedRule,
-  handleRemoveRule,
-}: RuleFormProps) => {
+const RuleForm = ({ newSelectedRule, setNewSelectedRule, handleRemoveRule }: RuleFormProps) => {
   return (
     <div className="app__rules-rule">
       <div>
         <select
           value={newSelectedRule.type}
-          onChange={(e) =>
-            setNewSelectedRule({ ...newSelectedRule, type: e.target.value })
-          }
+          onChange={(e) => setNewSelectedRule({ ...newSelectedRule, type: e.target.value })}
         >
           {RULES.map((rule) => (
             <option key={rule} value={rule}>
@@ -30,10 +24,8 @@ const RuleForm = ({
 
         <select
           value={newSelectedRule.variable}
-          onChange={(e) =>
-            setNewSelectedRule({ ...newSelectedRule, variable: e.target.value })
-          }
-          disabled={newSelectedRule.type !== "if"}
+          onChange={(e) => setNewSelectedRule({ ...newSelectedRule, variable: e.target.value })}
+          disabled={newSelectedRule.type !== 'if'}
         >
           {VARIABLES.map((variable) => (
             <option key={variable} value={variable}>
@@ -50,7 +42,7 @@ const RuleForm = ({
               expression: e.target.value,
             })
           }
-          disabled={newSelectedRule.type !== "if"}
+          disabled={newSelectedRule.type !== 'if'}
         >
           {EXPRESSIONS.map((expression) => (
             <option key={expression} value={expression}>
@@ -61,10 +53,8 @@ const RuleForm = ({
 
         <input
           placeholder="Rule value"
-          value={newSelectedRule.value || ""}
-          onChange={(e) =>
-            setNewSelectedRule({ ...newSelectedRule, value: e.target.value })
-          }
+          value={newSelectedRule.value || ''}
+          onChange={(e) => setNewSelectedRule({ ...newSelectedRule, value: e.target.value })}
         />
       </div>
       <button onClick={handleRemoveRule}>Remove rule</button>

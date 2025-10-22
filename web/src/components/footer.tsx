@@ -1,7 +1,7 @@
-import { useErrors } from "../hooks/useErrors";
-import type { PipelineData } from "../utils/types";
-import ErrorsList from "./errorList";
-import JobInfo from "./jobInfo";
+import { useErrors } from '../hooks/useErrors';
+import type { PipelineData } from '../utils/types';
+import ErrorsList from './errorList';
+import JobInfo from './jobInfo';
 
 interface FooterProps {
   pipelineData: PipelineData;

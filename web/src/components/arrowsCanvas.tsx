@@ -6,12 +6,12 @@ const ArrowsCanvas = ({ arrows }: ArrowsCanvasProps) => {
   return (
     <svg
       style={{
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         left: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
       }}
     >
       {arrows.map((arrow, index) => (
@@ -28,14 +28,7 @@ const ArrowsCanvas = ({ arrows }: ArrowsCanvasProps) => {
         />
       ))}
       <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="9"
-          refY="3.5"
-          orient="auto"
-        >
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
           <polygon points="0 0, 10 3.5, 0 7" fill="#fff" />
         </marker>
       </defs>

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import type { SelectedRule } from "../utils/types";
-import RuleForm from "./ruleForm";
-import { DEFAULT_RULE } from "../utils/constants";
+import { useEffect, useState } from 'react';
+import type { SelectedRule } from '../utils/types';
+import RuleForm from './ruleForm';
+import { DEFAULT_RULE } from '../utils/constants';
 
 interface RulesProps {
   selectedRules: SelectedRule[];
@@ -13,8 +13,7 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    const isDifferent =
-      JSON.stringify(newSelectedRules) !== JSON.stringify(selectedRules);
+    const isDifferent = JSON.stringify(newSelectedRules) !== JSON.stringify(selectedRules);
     setHasChanges(isDifferent);
   }, [newSelectedRules, selectedRules]);
 
@@ -28,9 +27,7 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
   };
 
   const handleUpdateRule = (index: number, updatedRule: SelectedRule) => {
-    setNewSelectedRules((prev) =>
-      prev.map((rule, i) => (i === index ? updatedRule : rule))
-    );
+    setNewSelectedRules((prev) => prev.map((rule, i) => (i === index ? updatedRule : rule)));
   };
 
   const handleApplyRules = () => {
@@ -53,9 +50,7 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
           <RuleForm
             key={index}
             newSelectedRule={rule}
-            setNewSelectedRule={(updatedRule) =>
-              handleUpdateRule(index, updatedRule)
-            }
+            setNewSelectedRule={(updatedRule) => handleUpdateRule(index, updatedRule)}
             handleRemoveRule={() => handleRemoveRule(index)}
           />
         ))}

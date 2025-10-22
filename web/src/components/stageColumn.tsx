@@ -1,6 +1,6 @@
-import type { Dispatch, RefObject, SetStateAction } from "react";
-import type { Job, PipelineData } from "../utils/types";
-import JobNode from "./jobNode";
+import type { Dispatch, RefObject, SetStateAction } from 'react';
+import type { Job, PipelineData } from '../utils/types';
+import JobNode from './jobNode';
 
 interface StageColumnProps {
   stage: string;

@@ -1,11 +1,11 @@
-import { useRef, useState } from "react";
-import StageColumn from "./components/stageColumn";
-import { type PipelineData, type SelectedRule } from "./utils/types";
-import { usePipelineArrows } from "./hooks/usePipelineArrows";
-import ArrowsCanvas from "./components/arrowsCanvas";
-import Footer from "./components/footer";
-import Rules from "./components/rules";
-import { usePipeline } from "./hooks/usePipeline";
+import StageColumn from './components/stageColumn';
+import ArrowsCanvas from './components/arrowsCanvas';
+import Footer from './components/footer';
+import Rules from './components/rules';
+import { useRef, useState } from 'react';
+import { type PipelineData, type SelectedRule } from './utils/types';
+import { usePipelineArrows } from './hooks/usePipelineArrows';
+import { usePipeline } from './hooks/usePipeline';
 
 function App() {
   const pipelineData = (window as { pipelineData?: PipelineData }).pipelineData;
@@ -21,7 +21,7 @@ function App() {
     jobRefs,
     isShowAllDependencies,
     selectedJobId,
-    hoveredJobId
+    hoveredJobId,
   );
 
   if (!newPipelineData) {
@@ -35,12 +35,9 @@ function App() {
           className="app__show-dependencies-button"
           onClick={() => setIsShowAllDependencies(!isShowAllDependencies)}
         >
-          {isShowAllDependencies ? "Hide" : "Show"} Dependencies
+          {isShowAllDependencies ? 'Hide' : 'Show'} Dependencies
         </button>
-        <Rules
-          selectedRules={selectedRules}
-          setSelectedRules={setSelectedRules}
-        ></Rules>
+        <Rules selectedRules={selectedRules} setSelectedRules={setSelectedRules}></Rules>
       </div>
 
       <ArrowsCanvas arrows={arrows} />

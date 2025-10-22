@@ -1,5 +1,5 @@
 export interface Rule {
-  type: "if" | "exists" | "changes" | "unknown";
+  type: 'if' | 'exists' | 'changes' | 'unknown';
   value?: any;
   when: string;
 }
