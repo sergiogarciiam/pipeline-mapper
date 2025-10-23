@@ -4,16 +4,7 @@ interface ArrowsCanvasProps {
 
 const ArrowsCanvas = ({ arrows }: ArrowsCanvasProps) => {
   return (
-    <svg
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-      }}
-    >
+    <svg className="absolute inset-0 w-full h-full transition duration-200 pointer-events-none">
       {arrows.map((arrow, index) => (
         <line
           key={index}

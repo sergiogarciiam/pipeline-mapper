@@ -1,16 +1,14 @@
-import { useEffect, useState, useCallback } from "react";
-import type { PipelineData } from "../utils/types";
+import { useEffect, useState, useCallback } from 'react';
+import type { PipelineData } from '../utils/types';
 
 export function usePipelineArrows(
   pipelineData: PipelineData | undefined,
   jobRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>,
   isShowAllDependencies: boolean,
   selectedJobId: string | null,
-  hoveredJobId: string | null
+  hoveredJobId: string | null,
 ) {
-  const [arrows, setArrows] = useState<Array<{ start: DOMRect; end: DOMRect }>>(
-    []
-  );
+  const [arrows, setArrows] = useState<Array<{ start: DOMRect; end: DOMRect }>>([]);
 
   const calculateArrows = useCallback(() => {
     const newArrows: Array<{ start: DOMRect; end: DOMRect }> = [];
@@ -49,18 +47,12 @@ export function usePipelineArrows(
     }
 
     setArrows(newArrows);
-  }, [
-    pipelineData,
-    jobRefs,
-    isShowAllDependencies,
-    selectedJobId,
-    hoveredJobId,
-  ]);
+  }, [pipelineData, jobRefs, isShowAllDependencies, selectedJobId, hoveredJobId]);
 
   useEffect(() => {
     calculateArrows();
-    window.addEventListener("scroll", calculateArrows, true);
-    return () => window.removeEventListener("scroll", calculateArrows, true);
+    window.addEventListener('scroll', calculateArrows, true);
+    return () => window.removeEventListener('scroll', calculateArrows, true);
   }, [calculateArrows]);
 
   return arrows;

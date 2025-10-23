@@ -1,26 +1,22 @@
-import { useEffect, useState } from "react";
-import type { Job, PipelineData } from "../utils/types";
+import { useEffect, useState } from 'react';
+import type { Job, PipelineData } from '../utils/types';
 
-export function useErrors(
-  pipelineData: PipelineData,
-  selectedJobId: string | null
-) {
+export function useErrors(pipelineData: PipelineData, selectedJobId: string | null) {
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const newErrors: string[] = [];
 
-    if (selectedJobId) {
-      const selectedJob = pipelineData.jobs[selectedJobId];
+    const jobsToCheck = selectedJobId ? [selectedJobId] : Object.keys(pipelineData.jobs);
 
-      if (selectedJob) {
-        fillErrorsArray(pipelineData, selectedJob, newErrors, selectedJobId);
+    jobsToCheck.forEach((jobName) => {
+      const job = pipelineData.jobs[jobName];
+      if (job) {
+        collectJobErrors(pipelineData, job, jobName, newErrors);
       }
-    } else {
-      Object.keys(pipelineData.jobs).forEach((jobName: string) => {
-        const job = pipelineData.jobs[jobName];
-        fillErrorsArray(pipelineData, job, newErrors, jobName);
-      });
+    });
+
+    if (!selectedJobId) {
       pipelineData.noExistInclude.forEach((include) => {
         newErrors.push(`Include "${include}" doesn't exist`);
       });
@@ -32,35 +28,25 @@ export function useErrors(
   return errors;
 }
 
-function fillErrorsArray(
-  pipelineData: PipelineData,
-  job: Job,
-  newErrors: string[],
-  jobName: string
-) {
+function collectJobErrors(pipelineData: PipelineData, job: Job, jobName: string, errors: string[]) {
   if (!job.stage) {
-    newErrors.push(`Job "${jobName}" has no stage defined`);
+    errors.push(`Job "${jobName}" has no stage defined`);
   } else if (!pipelineData.stages.includes(job.stage)) {
-    newErrors.push(`Job "${jobName}" has undefined stage "${job.stage}"`);
+    errors.push(`Job "${jobName}" has undefined stage "${job.stage}"`);
   }
 
-  if (Array.isArray(job.noExistNeeds)) {
-    job.noExistNeeds.forEach((need) => {
-      newErrors.push(`Job "${jobName}" needs undefined job "${need}"`);
-    });
-  }
+  appendArrayErrors(job.noExistNeeds, `needs undefined job`, jobName, errors);
+  appendArrayErrors(job.needsErrors, `needs undefined job with the new rules`, jobName, errors);
+  appendArrayErrors(job.noExistExtends, `extends undefined template`, jobName, errors);
+}
 
-  if (Array.isArray(job.noExistExtends)) {
-    job.noExistExtends.forEach((extend) => {
-      newErrors.push(`Job "${jobName}" extends undefined template "${extend}"`);
-    });
-  }
-
-  if (Array.isArray(job.needsErrors)) {
-    job.needsErrors.forEach((need) => {
-      newErrors.push(
-        `Job "${jobName}" needs undefined job "${need}" with the new rules`
-      );
-    });
+function appendArrayErrors(
+  arr: string[] | undefined,
+  message: string,
+  jobName: string,
+  errors: string[],
+) {
+  if (Array.isArray(arr)) {
+    arr.forEach((item) => errors.push(`Job "${jobName}" ${message} "${item}"`));
   }
 }

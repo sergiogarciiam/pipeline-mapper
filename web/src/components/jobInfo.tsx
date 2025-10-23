@@ -8,11 +8,11 @@ const JobInfo = ({
   pipelineData: PipelineData;
 }) => {
   return (
-    <div className="app__footer-job-info">
+    <div className="flex flex-col gap-2 !p-2 h-full w-full overflow-y-auto transition duration-200">
       {activeJobId ? (
         <>
           <h2>{activeJobId}</h2>
-          <div className="app__footer-job-info-list">
+          <div className="!ml-3">
             <p>
               <strong>Include:</strong>{' '}
               {pipelineData.jobs[activeJobId] ? pipelineData.jobs[activeJobId].includePath : 'N/A'}
@@ -37,12 +37,12 @@ const JobInfo = ({
                 ? pipelineData.jobs[activeJobId].needs?.join(', ')
                 : 'N/A'}
             </p>
-            <div className="app__footer-rules">
+            <div>
               <strong>Rules:</strong>
               {pipelineData.jobs[activeJobId] &&
               pipelineData.jobs[activeJobId].rules &&
               pipelineData.jobs[activeJobId].rules.length > 0 ? (
-                <ul>
+                <ul className="!ml-5">
                   {pipelineData.jobs[activeJobId].rules?.map((rule, index) => (
                     <li key={index}>
                       {rule.type} <code>{rule.value}</code>, then <code>{rule.when}</code>

@@ -1,17 +1,17 @@
 import StageColumn from './components/stageColumn';
 import ArrowsCanvas from './components/arrowsCanvas';
 import Footer from './components/footer';
-import Rules from './components/rules';
 import { useRef, useState } from 'react';
 import { type PipelineData, type SelectedRule } from './utils/types';
 import { usePipelineArrows } from './hooks/usePipelineArrows';
 import { usePipeline } from './hooks/usePipeline';
+import { Header } from './components/header';
 
 function App() {
   const pipelineData = (window as { pipelineData?: PipelineData }).pipelineData;
   const jobRefs = useRef<{ [key: string]: HTMLDivElement }>({});
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [hoveredJobId, setHoveredJobId] = useState<string | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isShowAllDependencies, setIsShowAllDependencies] = useState(false);
   const [selectedRules, setSelectedRules] = useState<SelectedRule[]>([]);
   const [newPipelineData] = usePipeline(pipelineData, selectedRules);
@@ -24,26 +24,21 @@ function App() {
     hoveredJobId,
   );
 
-  if (!newPipelineData) {
-    return;
-  }
+  if (!newPipelineData) return;
 
   return (
-    <div className="app">
-      <div className="app__controls">
-        <button
-          className="app__show-dependencies-button"
-          onClick={() => setIsShowAllDependencies(!isShowAllDependencies)}
-        >
-          {isShowAllDependencies ? 'Hide' : 'Show'} Dependencies
-        </button>
-        <Rules selectedRules={selectedRules} setSelectedRules={setSelectedRules}></Rules>
-      </div>
+    <div className="relative grid grid-rows-[1.5fr_7fr_1.5fr] gap-5 w-full h-screen">
+      <Header
+        isShowAllDependencies={isShowAllDependencies}
+        setIsShowAllDependencies={setIsShowAllDependencies}
+        selectedRules={selectedRules}
+        setSelectedRules={setSelectedRules}
+      ></Header>
 
-      <ArrowsCanvas arrows={arrows} />
+      <div className="flex w-full gap-10 !pl-5 overflow-auto">
+        <ArrowsCanvas arrows={arrows} />
 
-      <div className="app__stages">
-        {newPipelineData.stages.length > 0 ? (
+        {newPipelineData.stages.length > 0 &&
           newPipelineData.stages.map((stage: string) => (
             <StageColumn
               key={stage}
@@ -55,10 +50,7 @@ function App() {
               hoveredJobId={hoveredJobId}
               setHoveredJobId={setHoveredJobId}
             />
-          ))
-        ) : (
-          <p>Loading...</p>
-        )}
+          ))}
       </div>
       <Footer
         pipelineData={newPipelineData}

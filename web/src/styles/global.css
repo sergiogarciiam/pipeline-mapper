@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+:root {
+  --mixed-bg-darker: color-mix(in srgb, var(--vscode-editor-background) 90%, black);
+  --mixed-bg-lighter: color-mix(in srgb, var(--vscode-editor-background) 95%, white);
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -84,6 +89,7 @@ select {
   font-size: 13px;
   font-family: var(--vscode-font-family, sans-serif);
   outline: none;
+  cursor: pointer;
 }
 
 select:focus {

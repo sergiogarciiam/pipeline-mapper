@@ -35,10 +35,10 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
   };
 
   return (
-    <div className="app__rules-container">
-      <div className="app__rules-header">
+    <div className="flex flex-col gap-4 h-[150px] w-2/5 overflow-y-auto relative p-2.5">
+      <div className="sticky top-0 flex justify-between items-center bg-[var(--mixed-bg-darker)] !pb-2 rounded-sm">
         <h2>Rules</h2>
-        <div>
+        <div className="flex gap-2">
           <button onClick={handleApplyRules} disabled={!hasChanges}>
             Apply rules
           </button>

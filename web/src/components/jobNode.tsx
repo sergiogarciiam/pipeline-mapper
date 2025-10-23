@@ -18,7 +18,6 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
     const isWrongStage = !jobData.stage;
 
     const isSelected = selectedJobId === jobId;
-    const isHovered = hoveredJobId === jobId;
     const isBlurred =
       (selectedJobId && selectedJobId !== jobId) ||
       (!selectedJobId && hoveredJobId && hoveredJobId !== jobId);
@@ -30,11 +29,11 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
     return (
       <div
         ref={ref}
-        className={`job-node
-          ${isSelected ? 'job-node--active' : ''}
-          ${isHovered ? 'job-node--hover' : ''}
-          ${isBlurred ? 'job-node--blur' : ''}
-          ${jobData.isDisabled ? 'job-node--undefined' : ''}
+        className={`
+          border border-gray-300 rounded-sm !p-2 !my-1 cursor-pointer transition duration-200
+          ${isSelected ? 'shadow-[0_0_10px_rgba(0,0,0,0.2)] filter blur-0 opacity-100' : ''}
+          ${isBlurred ? 'filter blur-[2px] opacity-50' : ''}
+          ${jobData.isDisabled ? 'opacity-30' : ''}
         `}
         onMouseEnter={() => !selectedJobId && setHoveredJobId(jobId)}
         onMouseLeave={() => setHoveredJobId(null)}
@@ -50,4 +49,5 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
     );
   },
 );
+
 export default JobNode;

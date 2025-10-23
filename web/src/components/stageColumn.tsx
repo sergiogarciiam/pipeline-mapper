@@ -24,8 +24,8 @@ const StageColumn = ({
   const jobs = pipelineData.jobs || {};
 
   return (
-    <div className="stage-column">
-      <h2 className="stage-column__title">{stage}</h2>
+    <div className="flex flex-col gap-2 !p-5 border-[var(--mixed-bg-darker)] rounded-sm border-2 h-fit w-fit">
+      <h2>{stage}</h2>
       {Object.keys(jobs).map((jobName) => {
         if (jobs[jobName].stage !== stage) {
           return null;

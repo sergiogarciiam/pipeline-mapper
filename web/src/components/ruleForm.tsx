@@ -9,8 +9,8 @@ interface RuleFormProps {
 
 const RuleForm = ({ newSelectedRule, setNewSelectedRule, handleRemoveRule }: RuleFormProps) => {
   return (
-    <div className="app__rules-rule">
-      <div>
+    <div className="w-full flex justify-between !p-1 bg-[var(--mixed-bg-lighter)] rounded-sm">
+      <div className="flex gap-2">
         <select
           value={newSelectedRule.type}
           onChange={(e) => setNewSelectedRule({ ...newSelectedRule, type: e.target.value })}
