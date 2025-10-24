@@ -25,6 +25,7 @@ export function processJob(
     noExistNeeds: missingNeeds,
     extends: normalizeExtends(job.extends),
     noExistExtends: [],
+    needGroup: null,
     includePath,
   };
 

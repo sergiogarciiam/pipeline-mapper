@@ -5,6 +5,7 @@ import fs from 'fs';
 import { processIncludes } from './pipeine/includes';
 import { getWebviewContent } from './webview/webviewContent';
 import { processData } from './pipeine/parser';
+import { processNeedsGroups } from './pipeine/needsProcessor';
 
 export function activate(context: vscode.ExtensionContext) {
   let panel: vscode.WebviewPanel | undefined;
@@ -55,8 +56,9 @@ async function renderPipeline(
 
     const baseData = processData(jsonContent, rootName);
     const mergedData = await processIncludes(baseData, path.dirname(filePath));
+    const finalData = processNeedsGroups(mergedData);
 
-    panel.webview.html = await getWebviewContent(context, panel, mergedData);
+    panel.webview.html = await getWebviewContent(context, panel, finalData);
 
     if (isReload) {
       vscode.window.showInformationMessage('Pipeline Mapper actualizado ✔️');

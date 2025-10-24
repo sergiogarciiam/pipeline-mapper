@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 :root {
-  --mixed-bg-darker: color-mix(in srgb, var(--vscode-editor-background) 90%, black);
+  --mixed-bg-darker: color-mix(in srgb, var(--vscode-editor-background) 80%, black);
   --mixed-bg-lighter: color-mix(in srgb, var(--vscode-editor-background) 95%, white);
 }
 
@@ -100,4 +100,36 @@ select:focus {
 option {
   background-color: var(--vscode-dropdown-background);
   color: var(--vscode-dropdown-foreground);
+}
+
+.vscode-checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  border: 1px solid var(--vscode-input-background);
+  border-radius: 2px;
+  background-color: var(--vscode-input-background);
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.1s ease-in-out;
+}
+
+.vscode-checkbox:hover {
+  background-color: var(--vscode-input-background);
+}
+
+.vscode-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--vscode-foreground);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }

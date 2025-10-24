@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import type { SelectedRule } from '../utils/types';
+import type { SelectedRule } from '../../utils/types';
+import { DEFAULT_RULE } from '../../utils/constants';
 import RuleForm from './ruleForm';
-import { DEFAULT_RULE } from '../utils/constants';
 
 interface RulesProps {
   selectedRules: SelectedRule[];

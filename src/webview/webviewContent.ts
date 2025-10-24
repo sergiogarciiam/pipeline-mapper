@@ -5,7 +5,7 @@ import { PipelineData } from '../utils/types';
 export async function getWebviewContent(
   context: vscode.ExtensionContext,
   panel: vscode.WebviewPanel,
-  mergedData: PipelineData,
+  finalData: PipelineData,
 ) {
   const dist = vscode.Uri.joinPath(context.extensionUri, 'web', 'dist', 'assets');
   const files = fs.readdirSync(dist.fsPath);
@@ -20,7 +20,7 @@ export async function getWebviewContent(
   const jsUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(dist, jsFile));
   const cssUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(dist, cssFile));
 
-  const dataScript = `<script>window.pipelineData = ${JSON.stringify(mergedData)};</script>`;
+  const dataScript = `<script>window.pipelineData = ${JSON.stringify(finalData)};</script>`;
 
   return `<!DOCTYPE html>
   <html lang="en">

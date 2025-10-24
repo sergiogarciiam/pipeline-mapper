@@ -1,5 +1,5 @@
-import { useErrors } from '../hooks/useErrors';
-import type { PipelineData } from '../utils/types';
+import { useErrors } from '../../hooks/useErrors';
+import type { PipelineData } from '../../utils/types';
 import ErrorsList from './errorList';
 import JobInfo from './jobInfo';
 
@@ -14,10 +14,10 @@ const Footer = ({ pipelineData, selectedJobId, hoveredJobId }: FooterProps) => {
   const errors = useErrors(pipelineData, activeJobId);
 
   return (
-    <div className="grid grid-cols-[5fr_5fr] transition duration-200  min-h-[220px] max-h-[220px] overflow-hidder bg-[var(--mixed-bg-darker)] !p-4">
+    <footer className="grid grid-cols-[5fr_5fr] transition duration-200  min-h-[220px] max-h-[220px] overflow-hidder bg-[var(--mixed-bg-darker)] !p-4">
       <JobInfo activeJobId={activeJobId} pipelineData={pipelineData}></JobInfo>
       <ErrorsList errors={errors} />
-    </div>
+    </footer>
   );
 };
 

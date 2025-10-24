@@ -3,6 +3,7 @@ import { processJob } from './jobProcessor';
 
 export function processData(data: PipelineData, includePath: string) {
   const stages = data.stages || [];
+  const needsGroups: number[] = [];
   const hiddenJobs = Object.keys(data).filter((k) => k.startsWith('.'));
   const include = data.include || [];
   const noExistInclude: string[] = [];
@@ -17,7 +18,7 @@ export function processData(data: PipelineData, includePath: string) {
     }
   });
 
-  return { stages, jobs, hiddenJobs, include, noExistInclude };
+  return { stages, needsGroups, jobs, hiddenJobs, include, noExistInclude };
 }
 
 function isJob(name: string): boolean {

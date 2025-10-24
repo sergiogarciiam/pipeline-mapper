@@ -1,6 +1,6 @@
 import { forwardRef, type Dispatch, type SetStateAction } from 'react';
-import type { Job } from '../utils/types';
-import { DangerIcon } from '../utils/icons';
+import type { Job } from '../../utils/types';
+import { DangerIcon } from '../../utils/icons';
 
 interface JobNodeProps {
   jobId: string;
@@ -30,7 +30,7 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
       <div
         ref={ref}
         className={`
-          border border-gray-300 rounded-sm !p-2 !my-1 cursor-pointer transition duration-200
+          border border-[var(--vscode-editor-foreground)] rounded-sm !p-2 !my-1 cursor-pointer transition duration-200
           ${isSelected ? 'shadow-[0_0_10px_rgba(0,0,0,0.2)] filter blur-0 opacity-100' : ''}
           ${isBlurred ? 'filter blur-[2px] opacity-50' : ''}
           ${jobData.isDisabled ? 'opacity-30' : ''}
@@ -39,7 +39,7 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
         onMouseLeave={() => setHoveredJobId(null)}
         onClick={handleClick}
       >
-        <div className="job-node__content">
+        <div className="flex items-center gap-2">
           {jobId}
           {(hasNoExistNeeds || hasNoExistExtends || hasNeedsErrors || isWrongStage) && (
             <DangerIcon />

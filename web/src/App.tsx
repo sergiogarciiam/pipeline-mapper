@@ -1,11 +1,11 @@
-import StageColumn from './components/stageColumn';
-import ArrowsCanvas from './components/arrowsCanvas';
-import Footer from './components/footer';
+import { Header } from './components/header/header';
 import { useRef, useState } from 'react';
-import { type PipelineData, type SelectedRule } from './utils/types';
+import { type PipelineData, type SelectedRule, type ViewMode } from './utils/types';
 import { usePipelineArrows } from './hooks/usePipelineArrows';
 import { usePipeline } from './hooks/usePipeline';
-import { Header } from './components/header';
+import { NEEDS_VAR } from './utils/constants';
+import Footer from './components/footer/footer';
+import { PipelineView } from './components/main/pipelineView';
 
 function App() {
   const pipelineData = (window as { pipelineData?: PipelineData }).pipelineData;
@@ -14,6 +14,8 @@ function App() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isShowAllDependencies, setIsShowAllDependencies] = useState(false);
   const [selectedRules, setSelectedRules] = useState<SelectedRule[]>([]);
+  const [viewMode, setViewMode] = useState<ViewMode>(NEEDS_VAR);
+
   const [newPipelineData] = usePipeline(pipelineData, selectedRules);
 
   const arrows = usePipelineArrows(
@@ -24,7 +26,7 @@ function App() {
     hoveredJobId,
   );
 
-  if (!newPipelineData) return;
+  if (!newPipelineData) return null;
 
   return (
     <div className="relative grid grid-rows-[1.5fr_7fr_1.5fr] gap-5 w-full h-screen">
@@ -33,30 +35,26 @@ function App() {
         setIsShowAllDependencies={setIsShowAllDependencies}
         selectedRules={selectedRules}
         setSelectedRules={setSelectedRules}
-      ></Header>
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
 
-      <div className="flex w-full gap-10 !pl-5 overflow-auto">
-        <ArrowsCanvas arrows={arrows} />
+      <PipelineView
+        pipelineData={newPipelineData}
+        jobRefs={jobRefs}
+        selectedJobId={selectedJobId}
+        setSelectedJobId={setSelectedJobId}
+        hoveredJobId={hoveredJobId}
+        setHoveredJobId={setHoveredJobId}
+        arrows={arrows}
+        viewMode={viewMode}
+      />
 
-        {newPipelineData.stages.length > 0 &&
-          newPipelineData.stages.map((stage: string) => (
-            <StageColumn
-              key={stage}
-              stage={stage}
-              pipelineData={newPipelineData}
-              jobRefs={jobRefs}
-              selectedJobId={selectedJobId}
-              setSelectedJobId={setSelectedJobId}
-              hoveredJobId={hoveredJobId}
-              setHoveredJobId={setHoveredJobId}
-            />
-          ))}
-      </div>
       <Footer
         pipelineData={newPipelineData}
         selectedJobId={selectedJobId}
         hoveredJobId={hoveredJobId}
-      ></Footer>
+      />
     </div>
   );
 }

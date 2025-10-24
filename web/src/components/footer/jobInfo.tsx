@@ -1,4 +1,4 @@
-import type { PipelineData } from '../utils/types';
+import type { PipelineData } from '../../utils/types';
 
 const JobInfo = ({
   activeJobId,

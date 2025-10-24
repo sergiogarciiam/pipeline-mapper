@@ -12,7 +12,7 @@ const ArrowsCanvas = ({ arrows }: ArrowsCanvasProps) => {
           y1={arrow.start.top + arrow.start.height / 2}
           x2={arrow.end.left}
           y2={arrow.end.top + arrow.end.height / 2}
-          stroke="#fff"
+          stroke="var(--vscode-editor-foreground)"
           strokeWidth="1.5"
           opacity={0.7}
           markerEnd="url(#arrowhead)"
@@ -20,7 +20,7 @@ const ArrowsCanvas = ({ arrows }: ArrowsCanvasProps) => {
       ))}
       <defs>
         <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-          <polygon points="0 0, 10 3.5, 0 7" fill="#fff" />
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--vscode-editor-foreground)" />
         </marker>
       </defs>
     </svg>

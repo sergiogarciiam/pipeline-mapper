@@ -12,10 +12,12 @@ export interface Job {
   extends: string[];
   noExistExtends: string[];
   includePath: string;
+  needGroup: number | null;
 }
 
 export interface PipelineData {
   stages: string[];
+  needsGroups: number[];
   jobs: Record<string, Job>;
   hiddenJobs: string[];
   include: string[];

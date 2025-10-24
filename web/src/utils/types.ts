@@ -1,21 +1,21 @@
 export type Rules =
   | {
-      type: "if";
+      type: 'if';
       value: string;
       when: string;
     }
   | {
-      type: "changes";
+      type: 'changes';
       value: string[];
       when: string;
     }
   | {
-      type: "exists";
+      type: 'exists';
       value: string[];
       when: string;
     }
   | {
-      type: "unknown";
+      type: 'unknown';
       value?: null;
       when: string;
     };
@@ -37,10 +37,12 @@ export interface Job {
   isDisabled?: boolean;
   needsErrors?: string[];
   includePath: string;
+  needGroup: number | null;
 }
 
 export interface PipelineData {
   stages: string[];
+  needsGroups: number[];
   hiddenJobs?: string[];
   jobs: {
     [jobName: string]: Job;
@@ -48,3 +50,5 @@ export interface PipelineData {
   include: string[];
   noExistInclude: string[];
 }
+
+export type ViewMode = 'stages' | 'needs';
