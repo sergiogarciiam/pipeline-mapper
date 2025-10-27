@@ -2,7 +2,7 @@ import ArrowsCanvas from './arrowsCanvas';
 import JobsColumn from './jobsColumn';
 import type { PipelineData, ViewMode } from '../../utils/types';
 import type { Dispatch } from 'react';
-import { STAGES_VAR } from '../../utils/constants';
+import { NO_STAGE_DEFINED_COLUMN, STAGES_VAR } from '../../utils/constants';
 
 interface PipelineViewProps {
   pipelineData: PipelineData;
@@ -25,8 +25,18 @@ export function PipelineView({
   arrows,
   viewMode,
 }: PipelineViewProps) {
-  const columns = viewMode === STAGES_VAR ? pipelineData.stages : pipelineData.needsGroups;
+  const columns: (string | number)[] =
+    viewMode === STAGES_VAR ? [...pipelineData.stages] : [...pipelineData.needsGroups];
 
+  if (viewMode === STAGES_VAR) {
+    const hasUndefinedStage = Object.keys(pipelineData.jobs).some(
+      (job) => !pipelineData.jobs[job].stage,
+    );
+
+    if (hasUndefinedStage) {
+      columns.push(NO_STAGE_DEFINED_COLUMN);
+    }
+  }
   return (
     <main className="flex w-full gap-10 !pl-5 overflow-auto">
       <ArrowsCanvas arrows={arrows} />

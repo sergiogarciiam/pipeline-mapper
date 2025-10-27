@@ -1,6 +1,7 @@
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import type { Job, PipelineData } from '../../utils/types';
 import JobNode from './jobNode';
+import { NO_STAGE_DEFINED_COLUMN } from '../../utils/constants';
 
 interface JobsColumnProps {
   column: string | number;
@@ -24,9 +25,14 @@ const JobsColumn = ({
   const jobs = pipelineData.jobs || {};
 
   const isStageGroup = typeof column === 'string';
+  const isUndefinedStageGroup = isStageGroup && column === NO_STAGE_DEFINED_COLUMN;
 
   const filteredJobs = Object.entries(jobs).filter(([, job]) =>
-    isStageGroup ? job.stage === column : job.needGroup === column,
+    isUndefinedStageGroup
+      ? !job.stage
+      : isStageGroup
+        ? job.stage === column
+        : job.needGroup === column,
   );
 
   return (

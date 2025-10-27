@@ -7,6 +7,7 @@ export function usePipelineArrows(
   isShowAllDependencies: boolean,
   selectedJobId: string | null,
   hoveredJobId: string | null,
+  viewMode: string,
 ) {
   const [arrows, setArrows] = useState<Array<{ start: DOMRect; end: DOMRect }>>([]);
 
@@ -47,7 +48,8 @@ export function usePipelineArrows(
     }
 
     setArrows(newArrows);
-  }, [pipelineData, jobRefs, isShowAllDependencies, selectedJobId, hoveredJobId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pipelineData, jobRefs, isShowAllDependencies, selectedJobId, hoveredJobId, viewMode]);
 
   useEffect(() => {
     calculateArrows();

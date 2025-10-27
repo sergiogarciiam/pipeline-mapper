@@ -15,7 +15,6 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
     const hasNoExistExtends = jobData.noExistExtends && jobData.noExistExtends.length > 0;
     const hasNoExistNeeds = jobData.noExistNeeds && jobData.noExistNeeds.length > 0;
     const hasNeedsErrors = jobData.needsErrors && jobData.needsErrors.length > 0;
-    const isWrongStage = !jobData.stage;
 
     const isSelected = selectedJobId === jobId;
     const isBlurred =
@@ -41,9 +40,7 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
       >
         <div className="flex items-center gap-2">
           {jobId}
-          {(hasNoExistNeeds || hasNoExistExtends || hasNeedsErrors || isWrongStage) && (
-            <DangerIcon />
-          )}
+          {(hasNoExistNeeds || hasNoExistExtends || hasNeedsErrors) && <DangerIcon />}
         </div>
       </div>
     );

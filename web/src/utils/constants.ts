@@ -13,3 +13,5 @@ export const DEFAULT_RULE = {
 
 export const STAGES_VAR = 'stages';
 export const NEEDS_VAR = 'needs';
+
+export const NO_STAGE_DEFINED_COLUMN = 'No stage';

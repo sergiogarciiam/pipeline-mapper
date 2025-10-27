@@ -29,9 +29,7 @@ export function useErrors(pipelineData: PipelineData, selectedJobId: string | nu
 }
 
 function collectJobErrors(pipelineData: PipelineData, job: Job, jobName: string, errors: string[]) {
-  if (!job.stage) {
-    errors.push(`Job "${jobName}" has no stage defined`);
-  } else if (!pipelineData.stages.includes(job.stage)) {
+  if (job.stage && !pipelineData.stages.includes(job.stage)) {
     errors.push(`Job "${jobName}" has undefined stage "${job.stage}"`);
   }
 
