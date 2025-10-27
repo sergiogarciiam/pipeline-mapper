@@ -24,6 +24,7 @@ function App() {
     isShowAllDependencies,
     selectedJobId,
     hoveredJobId,
+    viewMode,
   );
 
   if (!newPipelineData) return null;

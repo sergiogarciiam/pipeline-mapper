@@ -1,42 +1,31 @@
 import * as vscode from 'vscode';
-import * as YAML from 'yaml';
 import path from 'path';
-import fs from 'fs';
-import { processIncludes } from './pipeine/includes';
-import { getWebviewContent } from './webview/webviewContent';
-import { processData } from './pipeine/parser';
-import { processNeedsGroups } from './pipeine/needsProcessor';
+import { WebviewComponent } from './webview/WebviewComponent';
+import { PipelineProcessor } from './pipeline/PipelineProcesor';
 
 export function activate(context: vscode.ExtensionContext) {
+  const webview = new WebviewComponent(context);
   let panel: vscode.WebviewPanel | undefined;
 
   const command = vscode.commands.registerCommand(
     'pipeline-mapper.generatePipelineMapper',
     async () => {
       const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        return vscode.window.showErrorMessage('No active editor');
-      }
+      if (!editor) return vscode.window.showErrorMessage('No active editor');
 
       const filePath = editor.document.fileName;
-      if (!filePath.endsWith('gitlab.yml')) {
-        return vscode.window.showErrorMessage('Solo funciona con gitlab.yml');
+      if (!filePath.endsWith('.yml')) {
+        return vscode.window.showErrorMessage('It is not a .yml file');
       }
 
-      panel = vscode.window.createWebviewPanel(
-        'pipelineMapper',
-        'Pipeline Mapper',
-        vscode.ViewColumn.One,
-        { enableScripts: true },
-      );
-
-      await renderPipeline(panel, context, filePath);
+      panel = webview.createPanel();
+      await renderPipeline(panel, filePath, webview);
     },
   );
 
   const watcher = vscode.workspace.onDidSaveTextDocument(async (doc) => {
-    if (doc.fileName.endsWith('gitlab.yml') && panel) {
-      await renderPipeline(panel, context, doc.fileName, true);
+    if (panel && doc.fileName.endsWith('.yml')) {
+      await renderPipeline(panel, doc.fileName, webview);
     }
   });
 
@@ -45,26 +34,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function renderPipeline(
   panel: vscode.WebviewPanel,
-  context: vscode.ExtensionContext,
   filePath: string,
-  isReload = false,
+  webview: WebviewComponent,
 ) {
   try {
-    const yamlText = fs.readFileSync(filePath, 'utf8');
-    const jsonContent = YAML.parse(yamlText);
-    const rootName = path.basename(filePath);
-
-    const baseData = processData(jsonContent, rootName);
-    const mergedData = await processIncludes(baseData, path.dirname(filePath));
-    const finalData = processNeedsGroups(mergedData);
-
-    panel.webview.html = await getWebviewContent(context, panel, finalData);
-
-    if (isReload) {
-      vscode.window.showInformationMessage('Pipeline Mapper actualizado ✔️');
-    }
+    const processor = new PipelineProcessor(path.dirname(filePath));
+    const data = await processor.process(filePath);
+    await webview.render(panel, data);
   } catch (err) {
-    vscode.window.showErrorMessage(`Error al procesar pipeline: ${err}`);
+    vscode.window.showErrorMessage(`Error processing the pipeline: ${err}`);
   }
 }
 

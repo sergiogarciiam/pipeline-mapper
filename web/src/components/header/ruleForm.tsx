@@ -1,5 +1,5 @@
 import type { SelectedRule } from '../../utils/types';
-import { EXPRESSIONS, RULES, VARIABLES } from '../../utils/constants';
+import { EXPRESSIONS, IF_RULE_TYPE, RULES, VARIABLES } from '../../utils/constants';
 
 interface RuleFormProps {
   newSelectedRule: SelectedRule;
@@ -25,7 +25,7 @@ const RuleForm = ({ newSelectedRule, setNewSelectedRule, handleRemoveRule }: Rul
         <select
           value={newSelectedRule.variable}
           onChange={(e) => setNewSelectedRule({ ...newSelectedRule, variable: e.target.value })}
-          disabled={newSelectedRule.type !== 'if'}
+          disabled={newSelectedRule.type !== IF_RULE_TYPE}
         >
           {VARIABLES.map((variable) => (
             <option key={variable} value={variable}>
@@ -42,7 +42,7 @@ const RuleForm = ({ newSelectedRule, setNewSelectedRule, handleRemoveRule }: Rul
               expression: e.target.value,
             })
           }
-          disabled={newSelectedRule.type !== 'if'}
+          disabled={newSelectedRule.type !== IF_RULE_TYPE}
         >
           {EXPRESSIONS.map((expression) => (
             <option key={expression} value={expression}>
