@@ -3,9 +3,11 @@ import { RuleStrategy } from './rules/RuleStrategy';
 import { IfRuleStrategy } from './rules/IfRuleStrategy';
 import { ExistsRuleStrategy } from './rules/ExistsRuleStrategy';
 import { ChangesRuleStrategy } from './rules/ChangesRuleStrategy';
+import { WhenRuleStrategy } from './rules/WhenRuleStrategy';
 
 export class RuleNormalizer {
   private strategies: RuleStrategy[] = [
+    new WhenRuleStrategy(),
     new IfRuleStrategy(),
     new ExistsRuleStrategy(),
     new ChangesRuleStrategy(),

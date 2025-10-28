@@ -18,6 +18,10 @@ export type Rules =
       type: 'unknown';
       value?: null;
       when: string;
+    }
+  | {
+      type: 'default';
+      when: string;
     };
 
 export interface SelectedRule {

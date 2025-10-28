@@ -1,3 +1,4 @@
+export const DEFAULT_RULE_TYPE = 'default';
 export const IF_RULE_TYPE = 'if';
 export const CHANGES_RULE_TYPE = 'changes';
 export const EXISTS_RULE_TYPE = 'exists';

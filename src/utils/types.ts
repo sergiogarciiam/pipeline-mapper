@@ -1,8 +1,15 @@
 export interface Rule {
-  type: 'if' | 'exists' | 'changes' | 'unknown';
+  type: 'if' | 'exists' | 'changes' | 'unknown' | 'default';
   value?: any;
   when: string;
 }
+
+export type IncludeItem =
+  | string
+  | {
+      local?: string;
+      file?: string;
+    };
 
 export interface Job {
   stage?: string;
@@ -20,6 +27,6 @@ export interface PipelineData {
   needsGroups: number[];
   jobs: Record<string, Job>;
   hiddenJobs: string[];
-  include: string[];
-  noExistInclude: string[];
+  include: IncludeItem[];
+  noExistInclude: IncludeItem[];
 }

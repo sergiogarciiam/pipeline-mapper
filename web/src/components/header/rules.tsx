@@ -54,6 +54,11 @@ const Rules = ({ selectedRules, setSelectedRules }: RulesProps) => {
             handleRemoveRule={() => handleRemoveRule(index)}
           />
         ))}
+      <p>
+        {selectedRules.map((selectedRule) => {
+          return `${selectedRule.variable} ${selectedRule.expression} ${selectedRule.value}\n`;
+        })}
+      </p>
     </div>
   );
 };
