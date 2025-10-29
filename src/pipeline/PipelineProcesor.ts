@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import * as path from 'path';
 import * as YAML from 'yaml';
 import { Job, PipelineData } from '../utils/types';
@@ -7,47 +7,65 @@ import { RuleNormalizer } from './RuleNormalizer';
 export class PipelineProcessor {
   private ruleNormalizer = new RuleNormalizer();
 
-  constructor(private baseDir: string) {}
+  constructor(
+    private baseDir: string,
+    private fs = fsPromises,
+    private yaml = YAML,
+  ) {}
 
   async process(filePath: string): Promise<PipelineData> {
-    const yamlContent = fs.readFileSync(filePath, 'utf8');
-    const noProcessedPipeline = YAML.parse(yamlContent);
     const rootName = path.basename(filePath);
-    const initialPipeline = this.extractPipelineData(noProcessedPipeline, rootName);
-    const pipelineWithIncludes = await this.resolveIncludes(
-      initialPipeline,
-      path.dirname(filePath),
-    );
-    const pipelineWithNeeds = this.resolveNeedsForAllJobs(pipelineWithIncludes);
-    const pipelineWithExtends = this.resolveExtendsForAllJobs(pipelineWithNeeds);
-    const pipelineWithNeedsGroups = this.resolveNeedsGroups(pipelineWithExtends);
-    const finalpipelineWithoutHiddenJobs = this.removeHiddenJobs(pipelineWithNeedsGroups);
-    return finalpipelineWithoutHiddenJobs;
+
+    const content = await this.readFile(filePath);
+    const raw = this.parseYamlSafe(content, filePath);
+
+    const initial = this.parseInitialPipeline(raw, rootName);
+
+    const withIncludes = await this.resolveIncludes(initial, path.dirname(filePath));
+    const withExtends = this.resolveExtendsForAllJobs(withIncludes);
+    const withNeeds = this.resolveNeedsForAllJobs(withExtends);
+    const withNeedsGroups = this.resolveNeedsGroups(withNeeds);
+    const finalPipeline = this.removeHiddenJobs(withNeedsGroups);
+
+    return finalPipeline;
   }
+
+  // #region HELPERS
+  private async readFile(filePath: string) {
+    return this.fs.readFile(filePath, 'utf8');
+  }
+
+  private parseYamlSafe(content: string, filePath = '<unknown>') {
+    try {
+      return this.yaml.parse(content);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new Error(`Error parsing YAML in "${filePath}": ${msg}`);
+    }
+  }
+  // #endregion
 
   // #region STEP 1: Extract initial pipeline data
-  private extractPipelineData(noProcessedPipeline: PipelineData, includePath: string) {
-    const stages = noProcessedPipeline.stages || [];
+  private parseInitialPipeline(rawPipeline: PipelineData, includePath: string) {
+    const stages = rawPipeline.stages || [];
     const needsGroups: number[] = [];
-    const hiddenJobs = Object.keys(noProcessedPipeline).filter((k) => k.startsWith('.'));
-    const include = noProcessedPipeline.include || [];
-    const noExistInclude: string[] = [];
+    const hiddenJobs = Object.keys(rawPipeline).filter((k) => k.startsWith('.'));
+    const includes = rawPipeline.includes || [];
+    const missingIncludes: string[] = [];
     const jobs: Record<string, Job> = {};
 
-    Object.keys(noProcessedPipeline).forEach((name) => {
-      if (this.isJob(name)) {
-        const job = this.processJob(name, noProcessedPipeline, includePath);
-        if (job) {
-          jobs[name] = job;
-        }
+    for (const key of Object.keys(rawPipeline || {})) {
+      if (!this.isReservedKey(key)) {
+        const job = this.buildJobFromRaw(key, rawPipeline, includePath, jobs);
+        if (job) jobs[key] = job;
       }
-    });
+    }
 
-    return { stages, needsGroups, jobs, hiddenJobs, include, noExistInclude };
+    return { stages, needsGroups, jobs, hiddenJobs, includes, missingIncludes };
   }
 
-  private isJob(name: string): boolean {
-    const reserved = [
+  private isReservedKey(name: string): boolean {
+    const reserved = new Set([
       'stages',
       'variables',
       'include',
@@ -57,32 +75,28 @@ export class PipelineProcessor {
       'before_script',
       'after_script',
       'types',
-    ];
-    return !reserved.includes(name);
+    ]);
+    return reserved.has(name);
   }
 
-  private processJob(
+  private buildJobFromRaw(
     jobName: string,
-    noProcessedPipeline: Record<string, any>,
+    rawPipeline: Record<string, any>,
     includePath: string,
     resolvedJobs: Record<string, Job> = {},
   ): Job | null {
-    if (resolvedJobs[jobName]) {
-      return resolvedJobs[jobName];
-    }
+    if (resolvedJobs[jobName]) return resolvedJobs[jobName];
 
-    const job = noProcessedPipeline[jobName];
-    if (!job || typeof job !== 'object') {
-      return null;
-    }
+    const rawJob = rawPipeline[jobName];
+    if (!rawJob || typeof rawJob !== 'object') return null;
 
     const processedJob: Job = {
-      stage: job.stage,
-      rules: this.ruleNormalizer.normalize(job.rules),
-      needs: job.needs ? [].concat(job.needs) : [],
-      noExistNeeds: [],
-      extends: job.extends ? [].concat(job.extends) : [],
-      noExistExtends: [],
+      stage: rawJob.stage,
+      rules: this.ruleNormalizer.normalize(rawJob.rules),
+      needs: rawJob.needs ? [].concat(rawJob.needs) : [],
+      missingNeeds: [],
+      extends: rawJob.extends ? [].concat(rawJob.extends) : [],
+      missingExtends: [],
       needGroup: null,
       includePath,
     };
@@ -98,39 +112,27 @@ export class PipelineProcessor {
     baseDir: string,
     visited: Set<string> = new Set(),
   ): Promise<PipelineData> {
-    const includes = Array.isArray(initialPipeline.include) ? initialPipeline.include : [];
-    let merged = { ...initialPipeline };
+    const includes = Array.isArray(initialPipeline.includes) ? initialPipeline.includes : [];
+    let merged = { ...initialPipeline } as PipelineData;
 
     for (const include of includes) {
-      let includePath: string | undefined;
-
-      if (typeof include === 'string') {
-        includePath = include;
-      } else if (include && typeof include === 'object' && include.local) {
-        includePath = (include as { local: string }).local;
-      } else if (include && typeof include === 'object' && include.file) {
-        includePath = include.file;
-      }
-
-      if (!includePath) {
-        continue;
-      }
+      const includePath = this.getIncludePath(include);
+      if (!includePath) continue;
 
       const resolved = path.resolve(baseDir, includePath);
-      if (visited.has(resolved)) {
-        continue;
-      }
-
+      if (visited.has(resolved)) continue;
       visited.add(resolved);
 
-      if (!fs.existsSync(resolved)) {
-        merged.noExistInclude.push(include);
+      const exists = await this.safeStat(resolved);
+
+      if (!exists) {
+        merged.missingIncludes.push(include);
         continue;
       }
 
-      const content = fs.readFileSync(resolved, 'utf8');
-      const noProcessedPipeline = YAML.parse(content);
-      const includedData = this.extractPipelineData(noProcessedPipeline, includePath);
+      const content = await this.readFile(resolved);
+      const raw = this.parseYamlSafe(content, resolved);
+      const includedData = this.parseInitialPipeline(raw, includePath);
       const expandedInclude = await this.resolveIncludes(
         includedData,
         path.dirname(resolved),
@@ -143,6 +145,23 @@ export class PipelineProcessor {
     return merged;
   }
 
+  private getIncludePath(include: any): string | undefined {
+    if (typeof include === 'string') return include;
+    if (include && typeof include === 'object') {
+      return include.local ?? include.file ?? undefined;
+    }
+    return undefined;
+  }
+
+  private async safeStat(p: string) {
+    try {
+      await this.fs.stat(p);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   private mergePipelines(base: PipelineData, included: PipelineData): PipelineData {
     return {
       ...base,
@@ -150,11 +169,11 @@ export class PipelineProcessor {
       jobs: { ...base.jobs, ...included.jobs },
       stages: [...new Set([...(base.stages || []), ...(included.stages || [])])],
       hiddenJobs: [...new Set([...(base.hiddenJobs || []), ...(included.hiddenJobs || [])])],
-      include: [...new Set([...(base.include || []), ...(included.include || [])])],
-      noExistInclude: [
-        ...new Set([...(base.noExistInclude || []), ...(included.noExistInclude || [])]),
+      include: [...new Set([...(base.includes || []), ...(included.includes || [])])],
+      missingIncludes: [
+        ...new Set([...(base.missingIncludes || []), ...(included.missingIncludes || [])]),
       ],
-    };
+    } as PipelineData;
   }
   // #endregion
 
@@ -163,7 +182,7 @@ export class PipelineProcessor {
     const resolvedJobs: Record<string, Job> = {};
 
     for (const jobName of Object.keys(pipeline.jobs)) {
-      this.resolveJobExtends(jobName, pipeline.jobs, resolvedJobs, []);
+      this.resolveJobExtends(jobName, pipeline.jobs, resolvedJobs, new Set());
     }
 
     return { ...pipeline, jobs: resolvedJobs };
@@ -173,36 +192,39 @@ export class PipelineProcessor {
     jobName: string,
     allJobs: Record<string, Job>,
     resolvedJobs: Record<string, Job>,
-    stack: string[],
+    stack: Set<string> = new Set(),
   ): Job | null {
     if (resolvedJobs[jobName]) return resolvedJobs[jobName];
     const job = allJobs[jobName];
     if (!job) return null;
 
-    if (stack.includes(jobName)) {
-      throw new Error(`Cyclic extends detected: ${[...stack, jobName].join(' -> ')}`);
+    if (stack.has(jobName)) {
+      const cycle = [...stack, jobName].join(' -> ');
+      throw new Error(`Cyclic extends detected: ${cycle}`);
     }
 
-    stack.push(jobName);
+    stack.add(jobName);
+
     const child: Job = {
       ...job,
       rules: [...job.rules],
       needs: [...job.needs],
-      noExistNeeds: [...job.noExistNeeds],
+      missingNeeds: [...job.missingNeeds],
       extends: [...job.extends],
-      noExistExtends: [...job.noExistExtends],
+      missingExtends: [...job.missingExtends],
     };
 
     for (let i = child.extends.length - 1; i >= 0; i--) {
       const parentName = child.extends[i];
       const parentJob = this.resolveJobExtends(parentName, allJobs, resolvedJobs, stack);
       if (!parentJob) {
-        child.noExistExtends.push(parentName);
+        child.missingExtends.push(parentName);
         continue;
       }
       this.mergeJobInheritance(child, parentJob);
     }
-    stack.pop();
+
+    stack.delete(jobName);
     resolvedJobs[jobName] = child;
     return child;
   }
@@ -214,14 +236,14 @@ export class PipelineProcessor {
 
     if (child.needs.length === 0) {
       child.needs = parent.needs;
-      child.noExistNeeds = parent.noExistNeeds;
+      child.missingNeeds = parent.missingNeeds;
     }
 
     if (!child.stage && parent.stage) {
       child.stage = parent.stage;
     }
 
-    child.noExistExtends = [...new Set([...parent.noExistExtends, ...child.noExistExtends])];
+    child.missingExtends = [...new Set([...parent.missingExtends, ...child.missingExtends])];
   }
   // #endregion
 
@@ -250,7 +272,7 @@ export class PipelineProcessor {
     const resolvedJob: Job = {
       ...job,
       needs: validNeeds,
-      noExistNeeds: missingNeeds,
+      missingNeeds: missingNeeds,
     };
 
     resolvedJobs[jobName] = resolvedJob;
@@ -273,7 +295,7 @@ export class PipelineProcessor {
 
   // #region STEP 5: Resolve needs groups
   private resolveNeedsGroups(piplineData: PipelineData): PipelineData {
-    const [resolvedJobsWithGroups, numberNeedsGroups] = this.assignNeedGroupsToJobs(
+    const [resolvedJobsWithGroups, numberNeedsGroups] = this.calculateJobDependencyLevels(
       piplineData.jobs,
     );
     const needsGroups = Array.from({ length: numberNeedsGroups + 1 }, (_, i) => i);
@@ -285,59 +307,45 @@ export class PipelineProcessor {
     };
   }
 
-  private assignNeedGroupsToJobs(resolvedJobs: Record<string, Job>): [Record<string, Job>, number] {
-    const jobs = Object.entries(resolvedJobs);
-    const jobGroups: Record<string, number> = {};
-    let depGroups: number[] = [];
+  private calculateJobDependencyLevels(jobs: Record<string, Job>): [Record<string, Job>, number] {
+    const inDegree: Record<string, number> = {};
+    const graph: Record<string, string[]> = {};
 
-    for (const [jobName, job] of jobs) {
-      if (!job.needs || job.needs.length === 0) {
-        jobGroups[jobName] = 0;
-      }
+    for (const [name, job] of Object.entries(jobs)) {
+      const deps = (job.needs || []).filter((n) => jobs[n]);
+      graph[name] = deps;
+      inDegree[name] = deps.length;
     }
 
-    let updated = true;
-    while (updated) {
-      updated = false;
+    const queue = Object.keys(jobs).filter((n) => inDegree[n] === 0);
+    const group: Record<string, number> = {};
+    let maxGroup = 0;
 
-      for (const [jobName, job] of jobs) {
-        if (jobGroups[jobName] !== undefined) continue;
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const currentGroup = group[current] ?? 0;
 
-        const dependencies = job.needs?.filter((n) => resolvedJobs[n]);
-        if (!dependencies || dependencies.length === 0) {
-          jobGroups[jobName] = 0;
-          updated = true;
-          continue;
-        }
-
-        depGroups = dependencies.map((n) => jobGroups[n]).filter((g) => g !== undefined);
-
-        if (depGroups.length === dependencies.length) {
-          jobGroups[jobName] = Math.max(...depGroups) + 1;
-          updated = true;
+      for (const [name, job] of Object.entries(jobs)) {
+        if (job.needs?.includes(current)) {
+          group[name] = Math.max(group[name] ?? 0, currentGroup + 1);
+          inDegree[name]--;
+          if (inDegree[name] === 0) queue.push(name);
+          maxGroup = Math.max(maxGroup, group[name]);
         }
       }
     }
 
-    for (const [jobName, job] of jobs) {
-      job.needGroup = jobGroups[jobName] ?? 0;
-    }
+    for (const [n, job] of Object.entries(jobs)) job.needGroup = group[n] ?? 0;
 
-    const numberNeedsGroups = Math.max(...Object.values(jobGroups));
-
-    return [resolvedJobs, numberNeedsGroups];
+    return [jobs, maxGroup];
   }
   // #endregion
 
   // #region STEP 6: Remove hidden jobs
   private removeHiddenJobs(pipeline: PipelineData): PipelineData {
-    const visibleJobs: Record<string, Job> = {};
-
-    for (const [jobName, job] of Object.entries(pipeline.jobs)) {
-      if (!pipeline.hiddenJobs.includes(jobName)) {
-        visibleJobs[jobName] = job;
-      }
-    }
+    const visibleJobs = Object.fromEntries(
+      Object.entries(pipeline.jobs).filter(([name]) => !pipeline.hiddenJobs.includes(name)),
+    );
 
     return {
       ...pipeline,

@@ -35,9 +35,9 @@ export interface Job {
   stage?: string;
   rules: Rules[];
   needs?: string[];
-  noExistNeeds?: string[];
+  missingNeeds?: string[];
   extends?: string[];
-  noExistExtends?: string[];
+  missingExtends?: string[];
   isDisabled?: boolean;
   needsErrors?: string[];
   includePath: string;
@@ -52,7 +52,7 @@ export interface PipelineData {
     [jobName: string]: Job;
   };
   include: string[];
-  noExistInclude: string[];
+  missingIncludes: string[];
 }
 
 export type ViewMode = 'stages' | 'needs';

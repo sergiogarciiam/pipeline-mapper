@@ -15,9 +15,9 @@ export interface Job {
   stage?: string;
   rules: Rule[];
   needs: string[];
-  noExistNeeds: string[];
+  missingNeeds: string[];
   extends: string[];
-  noExistExtends: string[];
+  missingExtends: string[];
   includePath: string;
   needGroup: number | null;
 }
@@ -27,6 +27,6 @@ export interface PipelineData {
   needsGroups: number[];
   jobs: Record<string, Job>;
   hiddenJobs: string[];
-  include: IncludeItem[];
-  noExistInclude: IncludeItem[];
+  includes: IncludeItem[];
+  missingIncludes: IncludeItem[];
 }

@@ -17,7 +17,7 @@ export function useErrors(pipelineData: PipelineData, selectedJobId: string | nu
     });
 
     if (!selectedJobId) {
-      pipelineData.noExistInclude.forEach((include) => {
+      pipelineData.missingIncludes.forEach((include) => {
         newErrors.push(`Include "${include}" doesn't exist`);
       });
     }
@@ -33,9 +33,9 @@ function collectJobErrors(pipelineData: PipelineData, job: Job, jobName: string,
     errors.push(`Job "${jobName}" has undefined stage "${job.stage}"`);
   }
 
-  appendArrayErrors(job.noExistNeeds, `needs undefined job`, jobName, errors);
+  appendArrayErrors(job.missingNeeds, `needs undefined job`, jobName, errors);
   appendArrayErrors(job.needsErrors, `needs undefined job with the new rules`, jobName, errors);
-  appendArrayErrors(job.noExistExtends, `extends undefined template`, jobName, errors);
+  appendArrayErrors(job.missingExtends, `extends undefined template`, jobName, errors);
 }
 
 function appendArrayErrors(

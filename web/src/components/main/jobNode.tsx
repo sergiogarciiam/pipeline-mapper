@@ -12,8 +12,8 @@ interface JobNodeProps {
 }
 const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
   ({ jobId, jobData, selectedJobId, setSelectedJobId, hoveredJobId, setHoveredJobId }, ref) => {
-    const hasNoExistExtends = jobData.noExistExtends && jobData.noExistExtends.length > 0;
-    const hasNoExistNeeds = jobData.noExistNeeds && jobData.noExistNeeds.length > 0;
+    const hasmissingExtends = jobData.missingExtends && jobData.missingExtends.length > 0;
+    const hasmissingNeeds = jobData.missingNeeds && jobData.missingNeeds.length > 0;
     const hasNeedsErrors = jobData.needsErrors && jobData.needsErrors.length > 0;
 
     const isSelected = selectedJobId === jobId;
@@ -40,7 +40,7 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
       >
         <div className="flex items-center gap-2">
           {jobId}
-          {(hasNoExistNeeds || hasNoExistExtends || hasNeedsErrors) && <DangerIcon />}
+          {(hasmissingNeeds || hasmissingExtends || hasNeedsErrors) && <DangerIcon />}
         </div>
       </div>
     );
