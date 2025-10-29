@@ -1,0 +1,62 @@
+{
+ "stages": [
+  "build",
+  "test",
+  "deploy"
+ ],
+ "needsGroups": [
+  0,
+  1,
+  2
+ ],
+ "jobs": {
+  "build": {
+   "stage": "build",
+   "rules": [
+    {
+     "if": "$CI_COMMIT_BRANCH == \"main\""
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "base.yml"
+  },
+  "test": {
+   "stage": "test",
+   "rules": [],
+   "needs": [
+    "build"
+   ],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 1,
+   "includePath": "include-single.yml"
+  },
+  "deploy": {
+   "stage": "deploy",
+   "rules": [],
+   "needs": [
+    "test"
+   ],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 2,
+   "includePath": "include-multiple.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "includes": [
+  {
+   "local": ".base_job"
+  },
+  {
+   "local": "./include-single.yml"
+  }
+ ],
+ "missingIncludes": []
+}

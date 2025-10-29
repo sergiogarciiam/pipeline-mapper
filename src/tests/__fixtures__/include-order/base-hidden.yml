@@ -1,0 +1,9 @@
+stages:
+  - base
+
+.base_job:
+  stage: base
+  script:
+    - echo "Base hidden job"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'

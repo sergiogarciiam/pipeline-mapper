@@ -1,0 +1,31 @@
+stages:
+  - prepare
+  - build
+  - test
+  - deploy
+
+include:
+  - local: ./base.yml
+
+.prepare_template:
+  stage: prepare
+  script:
+    - echo "Prepare environment"
+
+build:
+  extends: .prepare_template
+  stage: build
+  script:
+    - echo "Building app"
+
+test:
+  stage: test
+  needs: ["build"]
+  script:
+    - echo "Testing..."
+
+deploy:
+  stage: deploy
+  needs: ["test"]
+  script:
+    - echo "Deploying"

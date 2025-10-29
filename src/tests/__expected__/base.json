@@ -1,0 +1,29 @@
+{
+ "stages": [
+  "build"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "build": {
+   "stage": "build",
+   "rules": [
+    {
+     "type": "if",
+     "value": "$CI_COMMIT_BRANCH == \"main\"",
+     "when": "on_success"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "base.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "includes": [],
+ "missingIncludes": []
+}

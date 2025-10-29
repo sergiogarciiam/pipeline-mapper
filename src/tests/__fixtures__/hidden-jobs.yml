@@ -1,0 +1,10 @@
+stages:
+  - build
+  - test
+
+.build_template:
+  stage: build
+
+test:
+  extends: .build_template
+  stage: test

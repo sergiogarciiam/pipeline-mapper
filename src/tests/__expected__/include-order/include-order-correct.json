@@ -1,0 +1,32 @@
+{
+ "stages": [
+  "base",
+  "build"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "build": {
+   "stage": "build",
+   "rules": [
+    {
+     "if": "$CI_PIPELINE_SOURCE == \"push\""
+    }
+   ],
+   "needs": [],
+   "noExistNeeds": [],
+   "extends": [
+    ".base_job"
+   ],
+   "noExistExtends": [],
+   "needGroup": 0,
+   "includePath": "derived.yml"
+  }
+ },
+ "hiddenJobs": [
+  ".base_job"
+ ],
+ "includes": [],
+ "missingIncludes": []
+}

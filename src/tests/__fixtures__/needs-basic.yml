@@ -1,0 +1,21 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  script:
+    - echo "Build"
+
+test:
+  stage: test
+  needs: ["build"]
+  script:
+    - echo "Test"
+
+deploy:
+  stage: deploy
+  needs: ["test"]
+  script:
+    - echo "Deploy"

@@ -1,0 +1,19 @@
+stages:
+  - base
+  - build
+  - deploy
+
+.base_job:
+  stage: base
+  script:
+    - echo "Base"
+
+.build_job:
+  extends: .base_job
+  stage: build
+  script:
+    - echo "Build step"
+
+deploy:
+  extends: .build_job
+  stage: deploy

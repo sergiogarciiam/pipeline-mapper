@@ -1,0 +1,9 @@
+stages:
+  - validate
+include:
+  - local: ./non-existent.yml
+
+validate:
+  stage: validate
+  script:
+    - echo "Validation step"

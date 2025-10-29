@@ -1,0 +1,8 @@
+stages:
+  - build
+
+build:
+  extends: .base_job
+  stage: build
+  script:
+    - echo "Build job extending base_job"
