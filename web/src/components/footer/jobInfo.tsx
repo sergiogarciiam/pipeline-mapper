@@ -45,7 +45,8 @@ const JobInfo = ({
                 <ul className="!ml-5">
                   {pipelineData.jobs[activeJobId].rules?.map((rule, index) => (
                     <li key={index}>
-                      {rule.type} <code>{rule.value}</code>, then <code>{rule.when}</code>
+                      {rule.type} {'value' in rule && <code>{rule.value}</code>}, then{' '}
+                      <code>{rule.when}</code>
                     </li>
                   ))}
                 </ul>

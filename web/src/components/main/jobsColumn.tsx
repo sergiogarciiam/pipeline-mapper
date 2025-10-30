@@ -43,7 +43,9 @@ const JobsColumn = ({
         <JobNode
           key={jobName}
           ref={(el) => {
-            if (el) jobRefs.current[jobName] = el;
+            if (el) {
+              jobRefs.current[jobName] = el;
+            }
           }}
           jobId={jobName}
           jobData={job as Job}

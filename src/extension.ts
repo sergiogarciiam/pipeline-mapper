@@ -11,7 +11,9 @@ export function activate(context: vscode.ExtensionContext) {
     'pipeline-mapper.generatePipelineMapper',
     async () => {
       const editor = vscode.window.activeTextEditor;
-      if (!editor) return vscode.window.showErrorMessage('No active editor');
+      if (!editor) {
+        return vscode.window.showErrorMessage('No active editor');
+      }
 
       const filePath = editor.document.fileName;
       if (!filePath.endsWith('.yml')) {

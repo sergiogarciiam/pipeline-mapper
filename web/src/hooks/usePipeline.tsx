@@ -12,20 +12,29 @@ export function usePipeline(pipelineData: PipelineData | undefined, selectedRule
   const [newPipelineData, setNewPipelineData] = useState(pipelineData);
 
   useEffect(() => {
-    if (!pipelineData) return;
+    if (!pipelineData) {
+      return;
+    }
 
     const updatedPipeline: PipelineData = JSON.parse(JSON.stringify(pipelineData));
 
     const matchesSelectedRules = (job: Job): boolean => {
-      if (job.rules.length === 0) return true;
+      if (job.rules.length === 0) {
+        return true;
+      }
 
       for (const selectedRule of selectedRules) {
         for (const rule of job.rules) {
-          if (rule.when === NEVER_WHEN) return false;
-          if (rule.type === DEFAULT_RULE_TYPE) return true;
-          else if (rule.type === IF_RULE_TYPE) {
+          if (rule.when === NEVER_WHEN) {
+            return false;
+          }
+          if (rule.type === DEFAULT_RULE_TYPE) {
+            return true;
+          } else if (rule.type === IF_RULE_TYPE) {
             const expectedValue = `${selectedRule.variable} ${selectedRule.expression} ${selectedRule.value}`;
-            if (rule.value === expectedValue) return true;
+            if (rule.value === expectedValue) {
+              return true;
+            }
           } else if (
             (rule.type === EXISTS_RULE_TYPE || rule.type === CHANGES_RULE_TYPE) &&
             rule.value?.includes(selectedRule.value)

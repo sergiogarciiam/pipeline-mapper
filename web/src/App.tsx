@@ -27,7 +27,9 @@ function App() {
     viewMode,
   );
 
-  if (!newPipelineData) return null;
+  if (!newPipelineData) {
+    return null;
+  }
 
   return (
     <div className="relative grid grid-rows-[1.5fr_7fr_1.5fr] gap-5 w-full h-screen">

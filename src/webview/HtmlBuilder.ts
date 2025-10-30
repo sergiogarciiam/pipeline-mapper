@@ -1,3 +1,5 @@
+import type { PipelineData } from '../utils/types';
+
 export class HtmlBuilder {
   private title = 'Pipeline Mapper';
   private jsUri = '';
@@ -16,7 +18,7 @@ export class HtmlBuilder {
     return this;
   }
 
-  withData(data: any) {
+  withData(data: PipelineData) {
     this.dataScript = `<script>window.pipelineData = ${JSON.stringify(data)};</script>`;
     return this;
   }

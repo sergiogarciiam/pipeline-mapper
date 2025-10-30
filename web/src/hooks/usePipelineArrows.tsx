@@ -33,16 +33,22 @@ export function usePipelineArrows(
     if (activeJobId && pipelineData.jobs[activeJobId]) {
       const job = pipelineData.jobs[activeJobId];
       job.needs?.forEach((needId) => {
-        if (pipelineData.jobs[needId]) addArrow(needId, activeJobId);
+        if (pipelineData.jobs[needId]) {
+          addArrow(needId, activeJobId);
+        }
       });
 
       Object.entries(pipelineData.jobs).forEach(([jobId, j]) => {
-        if (j.needs?.includes(activeJobId)) addArrow(activeJobId, jobId);
+        if (j.needs?.includes(activeJobId)) {
+          addArrow(activeJobId, jobId);
+        }
       });
     } else if (isShowAllDependencies) {
       Object.entries(pipelineData.jobs).forEach(([jobId, job]) => {
         job.needs?.forEach((needId) => {
-          if (pipelineData.jobs[needId]) addArrow(needId, jobId);
+          if (pipelineData.jobs[needId]) {
+            addArrow(needId, jobId);
+          }
         });
       });
     }

@@ -1,7 +1,7 @@
 import { promises as fsPromises } from 'fs';
 import * as path from 'path';
 import * as YAML from 'yaml';
-import { Job, PipelineData } from '../utils/types';
+import type { IncludeItem, Job, PipelineData } from '../utils/types';
 import { RuleNormalizer } from './RuleNormalizer';
 
 export class PipelineProcessor {
@@ -50,18 +50,20 @@ export class PipelineProcessor {
     const stages = rawPipeline.stages || [];
     const needsGroups: number[] = [];
     const hiddenJobs = Object.keys(rawPipeline).filter((k) => k.startsWith('.'));
-    const includes = rawPipeline.includes || [];
+    const include = rawPipeline.include || [];
     const missingIncludes: string[] = [];
     const jobs: Record<string, Job> = {};
 
     for (const key of Object.keys(rawPipeline || {})) {
       if (!this.isReservedKey(key)) {
         const job = this.buildJobFromRaw(key, rawPipeline, includePath, jobs);
-        if (job) jobs[key] = job;
+        if (job) {
+          jobs[key] = job;
+        }
       }
     }
 
-    return { stages, needsGroups, jobs, hiddenJobs, includes, missingIncludes };
+    return { stages, needsGroups, jobs, hiddenJobs, include, missingIncludes };
   }
 
   private isReservedKey(name: string): boolean {
@@ -85,10 +87,14 @@ export class PipelineProcessor {
     includePath: string,
     resolvedJobs: Record<string, Job> = {},
   ): Job | null {
-    if (resolvedJobs[jobName]) return resolvedJobs[jobName];
+    if (resolvedJobs[jobName]) {
+      return resolvedJobs[jobName];
+    }
 
     const rawJob = rawPipeline[jobName];
-    if (!rawJob || typeof rawJob !== 'object') return null;
+    if (!rawJob || typeof rawJob !== 'object') {
+      return null;
+    }
 
     const processedJob: Job = {
       stage: rawJob.stage,
@@ -112,15 +118,19 @@ export class PipelineProcessor {
     baseDir: string,
     visited: Set<string> = new Set(),
   ): Promise<PipelineData> {
-    const includes = Array.isArray(initialPipeline.includes) ? initialPipeline.includes : [];
+    const includes = Array.isArray(initialPipeline.include) ? initialPipeline.include : [];
     let merged = { ...initialPipeline } as PipelineData;
 
     for (const include of includes) {
       const includePath = this.getIncludePath(include);
-      if (!includePath) continue;
+      if (!includePath) {
+        continue;
+      }
 
       const resolved = path.resolve(baseDir, includePath);
-      if (visited.has(resolved)) continue;
+      if (visited.has(resolved)) {
+        continue;
+      }
       visited.add(resolved);
 
       const exists = await this.safeStat(resolved);
@@ -145,8 +155,10 @@ export class PipelineProcessor {
     return merged;
   }
 
-  private getIncludePath(include: any): string | undefined {
-    if (typeof include === 'string') return include;
+  private getIncludePath(include: IncludeItem): string | undefined {
+    if (typeof include === 'string') {
+      return include;
+    }
     if (include && typeof include === 'object') {
       return include.local ?? include.file ?? undefined;
     }
@@ -157,7 +169,7 @@ export class PipelineProcessor {
     try {
       await this.fs.stat(p);
       return true;
-    } catch (_) {
+    } catch {
       return false;
     }
   }
@@ -169,7 +181,7 @@ export class PipelineProcessor {
       jobs: { ...base.jobs, ...included.jobs },
       stages: [...new Set([...(base.stages || []), ...(included.stages || [])])],
       hiddenJobs: [...new Set([...(base.hiddenJobs || []), ...(included.hiddenJobs || [])])],
-      include: [...new Set([...(base.includes || []), ...(included.includes || [])])],
+      include: [...new Set([...(base.include || []), ...(included.include || [])])],
       missingIncludes: [
         ...new Set([...(base.missingIncludes || []), ...(included.missingIncludes || [])]),
       ],
@@ -194,9 +206,13 @@ export class PipelineProcessor {
     resolvedJobs: Record<string, Job>,
     stack: Set<string> = new Set(),
   ): Job | null {
-    if (resolvedJobs[jobName]) return resolvedJobs[jobName];
+    if (resolvedJobs[jobName]) {
+      return resolvedJobs[jobName];
+    }
     const job = allJobs[jobName];
-    if (!job) return null;
+    if (!job) {
+      return null;
+    }
 
     if (stack.has(jobName)) {
       const cycle = [...stack, jobName].join(' -> ');
@@ -263,9 +279,13 @@ export class PipelineProcessor {
     allJobs: Record<string, Job>,
     resolvedJobs: Record<string, Job>,
   ): Job | null {
-    if (resolvedJobs[jobName]) return resolvedJobs[jobName];
+    if (resolvedJobs[jobName]) {
+      return resolvedJobs[jobName];
+    }
     const job = allJobs[jobName];
-    if (!job) return null;
+    if (!job) {
+      return null;
+    }
 
     const { validNeeds, missingNeeds } = this.getValidAndMissingNeeds(job, allJobs);
 
@@ -285,8 +305,11 @@ export class PipelineProcessor {
 
     for (const need of job.needs || []) {
       const name = typeof need === 'string' ? need : (need as { job: string }).job;
-      if (!allJobs[name]) missing.push(name);
-      else valid.push(name);
+      if (!allJobs[name]) {
+        missing.push(name);
+      } else {
+        valid.push(name);
+      }
     }
 
     return { validNeeds: valid, missingNeeds: missing };
@@ -329,13 +352,17 @@ export class PipelineProcessor {
         if (job.needs?.includes(current)) {
           group[name] = Math.max(group[name] ?? 0, currentGroup + 1);
           inDegree[name]--;
-          if (inDegree[name] === 0) queue.push(name);
+          if (inDegree[name] === 0) {
+            queue.push(name);
+          }
           maxGroup = Math.max(maxGroup, group[name]);
         }
       }
     }
 
-    for (const [n, job] of Object.entries(jobs)) job.needGroup = group[n] ?? 0;
+    for (const [n, job] of Object.entries(jobs)) {
+      job.needGroup = group[n] ?? 0;
+    }
 
     return [jobs, maxGroup];
   }

@@ -1,7 +1,29 @@
 export interface Rule {
   type: 'if' | 'exists' | 'changes' | 'unknown' | 'default';
-  value?: any;
+  value?: string;
   when: string;
+}
+
+export interface RawRule {
+  if?: string;
+  exists?: string | string[];
+  changes?: string | string[];
+  when?: string;
+}
+
+export interface IfRawRule {
+  if: string;
+  when?: string;
+}
+
+export interface ExistsRawRule {
+  exists: string | string[];
+  when?: string;
+}
+
+export interface ChangesRawRule {
+  changes: string | string[];
+  when?: string;
 }
 
 export type IncludeItem =
@@ -27,6 +49,6 @@ export interface PipelineData {
   needsGroups: number[];
   jobs: Record<string, Job>;
   hiddenJobs: string[];
-  includes: IncludeItem[];
+  include: IncludeItem[];
   missingIncludes: IncludeItem[];
 }
