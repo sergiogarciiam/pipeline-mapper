@@ -33,18 +33,45 @@ function collectJobErrors(pipelineData: PipelineData, job: Job, jobName: string,
     errors.push(`Job "${jobName}" has undefined stage "${job.stage}"`);
   }
 
-  appendArrayErrors(job.missingNeeds, `needs undefined job`, jobName, errors);
-  appendArrayErrors(job.needsErrors, `needs undefined job with the new rules`, jobName, errors);
-  appendArrayErrors(job.missingExtends, `extends undefined template`, jobName, errors);
+  appendArrayErrors({
+    jobNamesErrors: job.needsErrors,
+    preMessage: `needs undefined job`,
+    postMessage: 'due to new pipeline rules',
+    jobName,
+    errors,
+  });
+  appendArrayErrors({
+    jobNamesErrors: job.missingNeeds,
+    preMessage: `needs undefined job`,
+    jobName,
+    errors,
+  });
+  appendArrayErrors({
+    jobNamesErrors: job.postNeeds,
+    preMessage: `needs job`,
+    postMessage: "because it's in a later stage",
+    jobName,
+    errors,
+  });
+  appendArrayErrors({
+    jobNamesErrors: job.missingExtends,
+    preMessage: `extends undefined`,
+    jobName,
+    errors,
+  });
 }
 
-function appendArrayErrors(
-  arr: string[] | undefined,
-  message: string,
-  jobName: string,
-  errors: string[],
-) {
-  if (Array.isArray(arr)) {
-    arr.forEach((item) => errors.push(`Job "${jobName}" ${message} "${item}"`));
+function appendArrayErrors(data: {
+  jobNamesErrors: string[] | undefined;
+  preMessage: string;
+  postMessage?: string;
+  jobName: string;
+  errors: string[];
+}) {
+  const { jobNamesErrors, preMessage, jobName, errors, postMessage } = data;
+  if (Array.isArray(jobNamesErrors)) {
+    jobNamesErrors.forEach((jobNameError) =>
+      errors.push(`Job "${jobName}" ${preMessage} "${jobNameError}" ${postMessage}`),
+    );
   }
 }

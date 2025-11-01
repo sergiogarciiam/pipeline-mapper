@@ -11,6 +11,7 @@ interface HeaderProps {
   setSelectedRules: Dispatch<SetStateAction<SelectedRule[]>>;
   viewMode: ViewMode;
   setViewMode: Dispatch<SetStateAction<ViewMode>>;
+  setSelectedJobId: Dispatch<SetStateAction<string | null>>;
 }
 
 export const Header = ({
@@ -20,6 +21,7 @@ export const Header = ({
   setSelectedRules,
   viewMode,
   setViewMode,
+  setSelectedJobId,
 }: HeaderProps) => {
   return (
     <header className="flex items-center justify-between bg-[var(--mixed-bg-darker)] !p-4">
@@ -31,7 +33,11 @@ export const Header = ({
         ></DependenciesButton>
       </div>
 
-      <Rules selectedRules={selectedRules} setSelectedRules={setSelectedRules}></Rules>
+      <Rules
+        selectedRules={selectedRules}
+        setSelectedRules={setSelectedRules}
+        setSelectedJobId={setSelectedJobId}
+      ></Rules>
     </header>
   );
 };

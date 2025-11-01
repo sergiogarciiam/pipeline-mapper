@@ -11,16 +11,16 @@ const ViewModeTab = ({ viewMode, setViewMode }: ViewModeTabProps) => {
   return (
     <div>
       <button
-        className={`${viewMode === NEEDS_VAR && 'opacity-60'} !rounded-br-none !rounded-tr-none`}
-        onClick={() => setViewMode(NEEDS_VAR)}
-      >
-        Show by needs
-      </button>
-      <button
-        className={`${viewMode === STAGES_VAR && 'opacity-60'} !rounded-bl-none !rounded-tl-none`}
+        className={`${viewMode === STAGES_VAR && 'opacity-60'} !rounded-br-none !rounded-tr-none`}
         onClick={() => setViewMode(STAGES_VAR)}
       >
         Show by stages
+      </button>
+      <button
+        className={`${viewMode === NEEDS_VAR && 'opacity-60'}  !rounded-bl-none !rounded-tl-none`}
+        onClick={() => setViewMode(NEEDS_VAR)}
+      >
+        Show by needs
       </button>
     </div>
   );

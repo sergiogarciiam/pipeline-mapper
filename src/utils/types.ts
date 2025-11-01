@@ -38,6 +38,7 @@ export interface Job {
   rules: Rule[];
   needs: string[];
   missingNeeds: string[];
+  postNeeds: string[];
   extends: string[];
   missingExtends: string[];
   includePath: string;

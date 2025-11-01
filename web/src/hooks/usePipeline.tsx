@@ -37,7 +37,7 @@ export function usePipeline(pipelineData: PipelineData | undefined, selectedRule
             }
           } else if (
             (rule.type === EXISTS_RULE_TYPE || rule.type === CHANGES_RULE_TYPE) &&
-            rule.value?.includes(selectedRule.value)
+            rule.value === selectedRule.value
           ) {
             return true;
           }

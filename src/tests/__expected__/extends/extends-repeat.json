@@ -1,0 +1,37 @@
+{
+ "stages": [
+  "build",
+  "test"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "job1": {
+   "stage": "test",
+   "rules": [
+    {
+     "type": "if",
+     "value": "$CI_COMMIT_REF_NAME == \"dev\"",
+     "when": "always"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [
+    ".base1",
+    ".base2",
+    ".base2"
+   ],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "extends-repeat.yml"
+  }
+ },
+ "hiddenJobs": [
+  ".base1",
+  ".base2"
+ ],
+ "include": [],
+ "missingIncludes": []
+}

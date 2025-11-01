@@ -14,6 +14,7 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
   ({ jobId, jobData, selectedJobId, setSelectedJobId, hoveredJobId, setHoveredJobId }, ref) => {
     const hasmissingExtends = jobData.missingExtends && jobData.missingExtends.length > 0;
     const hasmissingNeeds = jobData.missingNeeds && jobData.missingNeeds.length > 0;
+    const hasPostNeeds = jobData.postNeeds && jobData.postNeeds.length > 0;
     const hasNeedsErrors = jobData.needsErrors && jobData.needsErrors.length > 0;
 
     const isSelected = selectedJobId === jobId;
@@ -40,7 +41,9 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
       >
         <div className="flex items-center gap-2">
           {jobId}
-          {(hasmissingNeeds || hasmissingExtends || hasNeedsErrors) && <DangerIcon />}
+          {(hasmissingNeeds || hasmissingExtends || hasNeedsErrors || hasPostNeeds) && (
+            <DangerIcon />
+          )}
         </div>
       </div>
     );

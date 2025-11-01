@@ -1,4 +1,4 @@
-export type Rules =
+export type Rule =
   | {
       type: 'if';
       value: string;
@@ -6,12 +6,12 @@ export type Rules =
     }
   | {
       type: 'changes';
-      value: string[];
+      value: string;
       when: string;
     }
   | {
       type: 'exists';
-      value: string[];
+      value: string;
       when: string;
     }
   | {
@@ -33,13 +33,14 @@ export interface SelectedRule {
 
 export interface Job {
   stage?: string;
-  rules: Rules[];
-  needs?: string[];
-  missingNeeds?: string[];
-  extends?: string[];
-  missingExtends?: string[];
-  isDisabled?: boolean;
-  needsErrors?: string[];
+  rules: Rule[];
+  needs: string[];
+  missingNeeds: string[];
+  postNeeds: string[];
+  extends: string[];
+  missingExtends: string[];
+  isDisabled: boolean;
+  needsErrors: string[];
   includePath: string;
   needGroup: number | null;
 }

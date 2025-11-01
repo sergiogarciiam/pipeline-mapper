@@ -6,6 +6,7 @@ import { RuleNormalizer } from './RuleNormalizer';
 
 export class PipelineProcessor {
   private ruleNormalizer = new RuleNormalizer();
+  private pipelineStages: string[] = [];
 
   constructor(
     private baseDir: string,
@@ -48,6 +49,7 @@ export class PipelineProcessor {
   // #region STEP 1: Extract initial pipeline data
   private parseInitialPipeline(rawPipeline: PipelineData, includePath: string) {
     const stages = rawPipeline.stages || [];
+    this.pipelineStages = stages;
     const needsGroups: number[] = [];
     const hiddenJobs = Object.keys(rawPipeline).filter((k) => k.startsWith('.'));
     const include = rawPipeline.include || [];
@@ -101,6 +103,7 @@ export class PipelineProcessor {
       rules: this.ruleNormalizer.normalize(rawJob.rules),
       needs: rawJob.needs ? [].concat(rawJob.needs) : [],
       missingNeeds: [],
+      postNeeds: [],
       extends: rawJob.extends ? [].concat(rawJob.extends) : [],
       missingExtends: [],
       needGroup: null,
@@ -117,6 +120,7 @@ export class PipelineProcessor {
     initialPipeline: PipelineData,
     baseDir: string,
     visited: Set<string> = new Set(),
+    stack: Set<string> = new Set(),
   ): Promise<PipelineData> {
     const includes = Array.isArray(initialPipeline.include) ? initialPipeline.include : [];
     let merged = { ...initialPipeline } as PipelineData;
@@ -129,9 +133,16 @@ export class PipelineProcessor {
       }
 
       const resolved = this.resolvePath(baseDir, includePath);
+
+      if (stack.has(resolved)) {
+        const cycle = [...stack, resolved].join(' -> ');
+        throw new Error(`Cyclic includes detected: ${cycle}`);
+      }
+
       if (visited.has(resolved)) {
         continue;
       }
+      stack.add(resolved);
       visited.add(resolved);
 
       const exists = await this.safeStat(resolved);
@@ -148,6 +159,7 @@ export class PipelineProcessor {
         includedData,
         path.dirname(resolved),
         visited,
+        stack,
       );
 
       merged = this.mergePipelines(merged, expandedInclude);
@@ -268,6 +280,7 @@ export class PipelineProcessor {
     if (child.needs.length === 0) {
       child.needs = parent.needs;
       child.missingNeeds = parent.missingNeeds;
+      child.postNeeds = parent.postNeeds;
     }
 
     if (!child.stage && parent.stage) {
@@ -291,43 +304,66 @@ export class PipelineProcessor {
 
   private resolveJobNeeds(
     jobName: string,
-    allJobs: Record<string, Job>,
+    pipeline: Record<string, Job>,
     resolvedJobs: Record<string, Job>,
+    stack: Set<string> = new Set(),
   ): Job | null {
     if (resolvedJobs[jobName]) {
       return resolvedJobs[jobName];
     }
-    const job = allJobs[jobName];
+    const job = pipeline[jobName];
     if (!job) {
       return null;
     }
 
-    const { validNeeds, missingNeeds } = this.getValidAndMissingNeeds(job, allJobs);
+    if (stack.has(jobName)) {
+      const cycle = [...stack, jobName].join(' -> ');
+      throw new Error(`Cyclic needs detected: ${cycle}`);
+    }
+
+    stack.add(jobName);
+
+    const validNeeds: string[] = [];
+    const missingNeeds: string[] = [];
+    const postNeeds: string[] = [];
+
+    for (const need of job.needs || []) {
+      const needName = typeof need === 'string' ? need : (need as { job: string }).job;
+      const neededJob = pipeline[needName];
+
+      if (!neededJob) {
+        missingNeeds.push(needName);
+        continue;
+      }
+
+      const stageIndex = (job.stage ? pipeline[jobName].stage : undefined) as string;
+      const neededStageIndex = neededJob.stage;
+      if (
+        stageIndex !== undefined &&
+        neededStageIndex !== undefined &&
+        this.getStageOrder(stageIndex) < this.getStageOrder(neededStageIndex)
+      ) {
+        postNeeds.push(needName);
+        continue;
+      }
+
+      this.resolveJobNeeds(needName, pipeline, resolvedJobs, stack);
+      validNeeds.push(needName);
+    }
 
     const resolvedJob: Job = {
       ...job,
       needs: validNeeds,
       missingNeeds: missingNeeds,
+      postNeeds: postNeeds,
     };
 
     resolvedJobs[jobName] = resolvedJob;
     return resolvedJob;
   }
 
-  private getValidAndMissingNeeds(job: Job, allJobs: Record<string, Job>) {
-    const valid: string[] = [];
-    const missing: string[] = [];
-
-    for (const need of job.needs || []) {
-      const name = typeof need === 'string' ? need : (need as { job: string }).job;
-      if (!allJobs[name]) {
-        missing.push(name);
-      } else {
-        valid.push(name);
-      }
-    }
-
-    return { validNeeds: valid, missingNeeds: missing };
+  private getStageOrder(stageName: string): number {
+    return this.pipelineStages.indexOf(stageName) ?? 0;
   }
   // #endregion
 

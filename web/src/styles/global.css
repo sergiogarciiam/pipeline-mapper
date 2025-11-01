@@ -68,12 +68,6 @@ input:focus {
   box-shadow: 0 0 0 1px var(--vscode-focusBorder);
 }
 
-input:disabled {
-  background-color: var(--vscode-input-disabledBackground);
-  color: var(--vscode-disabledForeground);
-  cursor: not-allowed;
-}
-
 input::selection,
 textarea::selection {
   background-color: var(--vscode-editor-selectionBackground);

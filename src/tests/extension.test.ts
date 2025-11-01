@@ -15,13 +15,13 @@ const testGroups: TestGroup[] = [
   {
     name: 'Extends Testing',
     dir: 'extends',
-    cases: ['extends-base', 'extends-missing', 'extends-multi'],
+    cases: ['extends-base', 'extends-missing', 'extends-multi', 'extends-repeat'],
     cycleFile: 'extends-cycle.yml',
   },
   {
     name: 'Needs Testing',
     dir: 'needs',
-    cases: ['needs-base', 'needs-missing', 'needs-multi'],
+    cases: ['needs-base', 'needs-missing', 'needs-multi', 'needs-repeat'],
     cycleFile: 'needs-cycle.yml',
   },
   {

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { type PipelineData, type SelectedRule, type ViewMode } from './utils/types';
 import { usePipelineArrows } from './hooks/usePipelineArrows';
 import { usePipeline } from './hooks/usePipeline';
-import { NEEDS_VAR } from './utils/constants';
+import { STAGES_VAR } from './utils/constants';
 import Footer from './components/footer/footer';
 import { PipelineView } from './components/main/pipelineView';
 
@@ -14,7 +14,7 @@ function App() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [isShowAllDependencies, setIsShowAllDependencies] = useState(false);
   const [selectedRules, setSelectedRules] = useState<SelectedRule[]>([]);
-  const [viewMode, setViewMode] = useState<ViewMode>(NEEDS_VAR);
+  const [viewMode, setViewMode] = useState<ViewMode>(STAGES_VAR);
 
   const [newPipelineData] = usePipeline(pipelineData, selectedRules);
 
@@ -40,6 +40,7 @@ function App() {
         setSelectedRules={setSelectedRules}
         viewMode={viewMode}
         setViewMode={setViewMode}
+        setSelectedJobId={setSelectedJobId}
       />
 
       <PipelineView
@@ -57,6 +58,7 @@ function App() {
         pipelineData={newPipelineData}
         selectedJobId={selectedJobId}
         hoveredJobId={hoveredJobId}
+        setSelectedRules={setSelectedRules}
       />
     </div>
   );
