@@ -29,7 +29,7 @@
     "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint && pnpm run lint:web",
+    "retest": "pnpm run compile-tests && pnpm run compile && pnpm run lint && pnpm run lint:web",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
     "lint:web": "cd web && pnpm run lint",

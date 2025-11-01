@@ -1,0 +1,44 @@
+stages:
+  - prepare
+  - build
+  - test
+  - deploy
+
+include:
+  - local: base.yml
+
+.template:
+  script:
+    - echo "This is a template job"
+
+.prepare_template:
+  stage: prepare
+  script:
+    - echo "This is the prepare stage"
+
+build:
+  extends: 
+    - .prepare_template
+  stage: build
+  script:
+    - echo "Building app"
+
+pre_test:
+  extends: [.template, .prepare_template]
+  needs: ["test"]
+  stage: test
+  script:
+    - echo "Preparing for tests"
+
+test:
+  stage: test
+  needs: ["pre_test", "build"]
+  script:
+    - echo "Testing..."
+
+deploy:
+  stage: deploy
+  needs:
+    - "test"
+  script:
+    - echo "Deploying"

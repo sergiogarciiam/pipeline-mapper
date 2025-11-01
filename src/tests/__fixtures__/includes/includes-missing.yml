@@ -1,0 +1,10 @@
+stages:
+  - build
+  
+include:
+  - local: non-existent.yml
+  - local: ./helper_common.yml
+  - local: /helper_common.yml
+
+build:
+  stage: build

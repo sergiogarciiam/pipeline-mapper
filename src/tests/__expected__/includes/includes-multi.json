@@ -1,0 +1,87 @@
+{
+ "stages": [
+  "build",
+  "test",
+  "deploy"
+ ],
+ "needsGroups": [
+  0,
+  1
+ ],
+ "jobs": {
+  "build": {
+   "stage": "build",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "includes-base.yml"
+  },
+  "test": {
+   "stage": "test",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "helper_common.yml"
+  },
+  "deploy1": {
+   "stage": "deploy",
+   "rules": [
+    {
+     "type": "if",
+     "value": "$CI_PIPELINE_SOURCE == \"push\"",
+     "when": "on_success"
+    }
+   ],
+   "needs": [
+    "build"
+   ],
+   "missingNeeds": [],
+   "extends": [
+    ".prepare"
+   ],
+   "missingExtends": [],
+   "needGroup": 1,
+   "includePath": "helper_multi2.yml"
+  }
+ },
+ "deploy2": {
+  "stage": "deploy",
+  "rules": [
+   {
+    "type": "exists",
+    "value": "Dockerfile",
+    "when": "on_success"
+   },
+   {
+    "type": "exists",
+    "value": "helm/Chart.yaml",
+    "when": "on_success"
+   }
+  ],
+  "needs": [],
+  "missingNeeds": [],
+  "extends": [],
+  "missingExtends": [],
+  "needGroup": 0,
+  "includePath": "includes.multi.yml"
+ },
+ "hiddenJobs": [
+  ".prepare"
+ ],
+ "include": [
+  {
+   "local": "includes-base.yml"
+  },
+  {
+   "local": "helper_multi2.yml"
+  },
+  "helper_common.yml"
+ ],
+ "missingIncludes": []
+}

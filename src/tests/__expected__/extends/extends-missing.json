@@ -1,0 +1,27 @@
+{
+ "stages": [
+  "test"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "test": {
+   "stage": "test",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [
+    ".no_exist_extend"
+   ],
+   "missingExtends": [
+    ".no_exist_extend"
+   ],
+   "needGroup": 0,
+   "includePath": "extends-missing.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "include": [],
+ "missingIncludes": []
+}

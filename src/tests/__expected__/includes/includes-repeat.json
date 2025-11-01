@@ -1,0 +1,36 @@
+{
+ "stages": [
+  "build",
+  "test"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "build": {
+   "stage": "build",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "includes-repeat.yml"
+  },
+  "test": {
+   "stage": "test",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "helper_common.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "include": [
+  "helper_common.yml"
+ ],
+ "missingIncludes": []
+}

@@ -1,0 +1,44 @@
+{
+ "stages": [
+  "test"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "test": {
+   "stage": "test",
+   "rules": [
+    {
+     "type": "if",
+     "value": "$CI_COMMIT_BRANCH == \"main\"",
+     "when": "always"
+    },
+    {
+     "type": "if",
+     "value": "$CI_COMMIT_BRANCH == \"master\"",
+     "when": "always"
+    },
+    {
+     "type": "changes",
+     "value": "tests/**/*.spec.ts",
+     "when": "on_success"
+    },
+    {
+     "type": "exists",
+     "value": "tests/setup.ts",
+     "when": "on_success"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "rules-multi.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "include": [],
+ "missingIncludes": []
+}

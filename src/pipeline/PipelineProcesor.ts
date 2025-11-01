@@ -124,10 +124,11 @@ export class PipelineProcessor {
     for (const include of includes) {
       const includePath = this.getIncludePath(include);
       if (!includePath) {
+        merged.missingIncludes.push(include);
         continue;
       }
 
-      const resolved = path.resolve(baseDir, includePath);
+      const resolved = this.resolvePath(baseDir, includePath);
       if (visited.has(resolved)) {
         continue;
       }
@@ -156,13 +157,27 @@ export class PipelineProcessor {
   }
 
   private getIncludePath(include: IncludeItem): string | undefined {
+    let localPath: string | undefined;
+
     if (typeof include === 'string') {
-      return include;
+      localPath = include;
+    } else if (include && typeof include === 'object') {
+      localPath = include.local ?? include.file ?? undefined;
     }
-    if (include && typeof include === 'object') {
-      return include.local ?? include.file ?? undefined;
+
+    if (localPath && localPath.match(/^(\.\/|\.\.)/)) {
+      return undefined;
     }
-    return undefined;
+
+    return localPath;
+  }
+
+  private resolvePath(baseDir: string, includePath: string) {
+    if (includePath.startsWith('/')) {
+      return path.resolve(baseDir, `./${includePath}`);
+    } else {
+      return path.resolve(baseDir, includePath);
+    }
   }
 
   private async safeStat(p: string) {

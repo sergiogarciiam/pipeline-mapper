@@ -1,0 +1,12 @@
+deploy1:
+  extends: 
+    - .prepare
+  needs: build 
+  stage: deploy
+
+deploy2:
+  stage: build
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+  

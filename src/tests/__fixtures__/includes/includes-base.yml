@@ -1,0 +1,9 @@
+stages:
+  - build
+  - test
+
+include:
+  - helper_common.yml
+
+build:
+  stage: build

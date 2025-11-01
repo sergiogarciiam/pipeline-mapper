@@ -1,0 +1,50 @@
+{
+ "stages": [
+  "build"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "build": {
+   "stage": "build",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "includes-missing.yml"
+  },
+  "test": {
+   "stage": "test",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "/helper_common.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "include": [
+  {
+   "local": "non-existent.yml"
+  },
+  {
+   "local": "./helper_common.yml"
+  },
+  {
+   "local": "/helper_common.yml"
+  }
+ ],
+ "missingIncludes": [
+  {
+   "local": "non-existent.yml"
+  },
+  {
+   "local": "./helper_common.yml"
+  }
+ ]
+}

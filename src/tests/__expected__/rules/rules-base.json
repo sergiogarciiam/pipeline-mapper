@@ -1,0 +1,100 @@
+{
+ "stages": [
+  "prepare",
+  "build",
+  "test",
+  "deploy"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "prepare": {
+   "stage": "prepare",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "rules-base.yml"
+  },
+  "build": {
+   "stage": "build",
+   "rules": [
+    {
+     "type": "if",
+     "value": "$CI_COMMIT_BRANCH == \"main\"",
+     "when": "on_success"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "rules-base.yml"
+  },
+  "test1": {
+   "stage": "test",
+   "rules": [
+    {
+     "type": "changes",
+     "value": "src/**/*.ts",
+     "when": "on_success"
+    },
+    {
+     "type": "changes",
+     "value": "package.json",
+     "when": "on_success"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "rules-base.yml"
+  },
+  "test2": {
+   "stage": "test",
+   "rules": [
+    {
+     "type": "if",
+     "value": "$CI_COMMIT_BRANCH == \"main\"",
+     "when": "never"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "rules-base.yml"
+  },
+  "deploy": {
+   "stage": "deploy",
+   "rules": [
+    {
+     "type": "exists",
+     "value": "Dockerfile",
+     "when": "on_success"
+    },
+    {
+     "type": "exists",
+     "value": "helm/Chart.yaml",
+     "when": "on_success"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "rules-base.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "include": [],
+ "missingIncludes": []
+}

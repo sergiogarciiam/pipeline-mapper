@@ -1,0 +1,16 @@
+stages:
+  - test
+  - prepare
+
+prepare:
+  stage: prepare
+  script:
+    - echo "Preparing..."
+
+test:
+  stage: test
+  needs:
+    - build
+    - prepare
+  script:
+    - echo "Testing something"

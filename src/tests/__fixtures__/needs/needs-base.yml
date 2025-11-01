@@ -1,0 +1,15 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+
+test:
+  stage: test
+  needs: [build]
+
+deploy:
+  stage: deploy
+  needs: [test]

@@ -1,6 +1,0 @@
-stages:
-  - base
-  - build
-include:
-  - local: ./derived.yml
-  - local: ./base-hidden.yml

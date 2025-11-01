@@ -1,0 +1,10 @@
+stages:
+  - build
+
+build:
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+include:
+  - cycle-includes.yml

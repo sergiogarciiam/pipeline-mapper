@@ -1,0 +1,9 @@
+stages:
+  - test
+
+test:
+  stage: test
+  extends: 
+    - .no_exist_extend
+  script:
+    - echo "Testing something"

@@ -1,0 +1,12 @@
+stages:
+  - test
+
+test:
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"' 
+      when: always
+    - changes:
+        - tests/**/*.spec.ts
+    - exists:
+        - tests/setup.ts

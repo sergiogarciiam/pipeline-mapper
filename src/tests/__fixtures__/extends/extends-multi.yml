@@ -1,0 +1,17 @@
+stages:
+  - build
+  - test
+
+.base1:
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+
+.base2:
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "dev"'
+      when: always
+
+job1:
+  extends: [.base1, .base2]

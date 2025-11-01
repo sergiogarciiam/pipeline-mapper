@@ -1,0 +1,12 @@
+stages:
+  - build
+  - test
+
+.base_job:
+  stage: build
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+child_job:
+  extends: .base_job
+  needs: []

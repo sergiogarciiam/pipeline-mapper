@@ -1,9 +1,0 @@
-stages:
-  - test
-
-test:
-  stage: test
-  needs:
-    - build
-  script:
-    - echo "Testing something"

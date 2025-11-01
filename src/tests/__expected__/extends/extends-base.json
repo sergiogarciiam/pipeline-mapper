@@ -1,0 +1,34 @@
+{
+ "stages": [
+  "build",
+  "test"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "child_job": {
+   "stage": "build",
+   "rules": [
+    {
+     "type": "if",
+     "value": "$CI_PIPELINE_SOURCE == \"push\"",
+     "when": "on_success"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [
+    ".base_job"
+   ],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "extends-base.yml"
+  }
+ },
+ "hiddenJobs": [
+  ".base_job"
+ ],
+ "include": [],
+ "missingIncludes": []
+}

@@ -1,0 +1,40 @@
+{
+ "stages": [
+  "test",
+  "prepare"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "prepare": {
+   "stage": "build",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "needs-missing.yml"
+  },
+  "test": {
+   "stage": "test",
+   "rules": [],
+   "needs": [
+    "build",
+    "prepare"
+   ],
+   "missingNeeds": [
+    "build",
+    "prepare"
+   ],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "needs-missing.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "include": [],
+ "missingIncludes": []
+}

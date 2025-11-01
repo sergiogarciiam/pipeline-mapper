@@ -1,0 +1,64 @@
+{
+ "stages": [
+  "build",
+  "test",
+  "deploy"
+ ],
+ "needsGroups": [
+  0,
+  1,
+  2
+ ],
+ "jobs": {
+  "build": {
+   "stage": "build",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "needs-multi.yml"
+  },
+  "test1": {
+   "stage": "test",
+   "rules": [],
+   "needs": [
+    "build"
+   ],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 1,
+   "includePath": "needs-multi.yml"
+  },
+  "test2": {
+   "stage": "test",
+   "rules": [],
+   "needs": [
+    "build"
+   ],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 1,
+   "includePath": "needs-multi.yml"
+  },
+  "deploy": {
+   "stage": "deploy",
+   "rules": [],
+   "needs": [
+    "test1",
+    "test2"
+   ],
+   "missingNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 2,
+   "includePath": "needs-multi.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "include": [],
+ "missingIncludes": []
+}
