@@ -11,6 +11,7 @@
    "rules": [],
    "needs": [],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [
     ".no_exist_extend"
    ],

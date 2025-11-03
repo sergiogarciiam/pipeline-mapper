@@ -12,6 +12,7 @@
    "rules": [],
    "needs": [],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 0,
@@ -22,7 +23,9 @@
    "rules": [],
    "needs": [],
    "missingNeeds": [
-    "build",
+    "build"
+   ],
+   "postNeeds": [
     "prepare"
    ],
    "extends": [],

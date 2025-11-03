@@ -14,16 +14,40 @@
    "rules": [],
    "needs": [],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 0,
    "includePath": "includes-base.yml"
+  },
+  "deploy2": {
+   "stage": "deploy",
+   "rules": [
+    {
+     "type": "exists",
+     "value": "Dockerfile",
+     "when": "on_success"
+    },
+    {
+     "type": "exists",
+     "value": "helm/Chart.yaml",
+     "when": "on_success"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "postNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "includes-multi.yml"
   },
   "test": {
    "stage": "test",
    "rules": [],
    "needs": [],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 0,
@@ -42,6 +66,7 @@
     "build"
    ],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [
     ".prepare"
    ],
@@ -49,27 +74,6 @@
    "needGroup": 1,
    "includePath": "helper_multi2.yml"
   }
- },
- "deploy2": {
-  "stage": "deploy",
-  "rules": [
-   {
-    "type": "exists",
-    "value": "Dockerfile",
-    "when": "on_success"
-   },
-   {
-    "type": "exists",
-    "value": "helm/Chart.yaml",
-    "when": "on_success"
-   }
-  ],
-  "needs": [],
-  "missingNeeds": [],
-  "extends": [],
-  "missingExtends": [],
-  "needGroup": 0,
-  "includePath": "includes.multi.yml"
  },
  "hiddenJobs": [
   ".prepare"

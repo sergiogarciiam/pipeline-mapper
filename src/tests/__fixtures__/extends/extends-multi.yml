@@ -1,17 +1,32 @@
 stages:
+  - prepare
   - build
-  - test
+  - test1
+  - test2
 
 .base1:
-  stage: build
+  stage: test1
+  needs: [build]
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main"'
 
 .base2:
-  stage: test
+  stage: test2
+  needs: [prepare]
   rules:
     - if: '$CI_COMMIT_REF_NAME == "dev"'
       when: always
 
-job1:
+prepare:
+  stage: prepare
+
+build:
+  stage: build
+
+test1:
   extends: [.base1, .base2]
+
+test2:
+  stage: test2
+  needs: [test1]
+  extends: [.base1]

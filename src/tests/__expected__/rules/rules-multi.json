@@ -32,6 +32,7 @@
    ],
    "needs": [],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 0,

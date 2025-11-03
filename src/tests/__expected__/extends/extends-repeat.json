@@ -18,6 +18,7 @@
    ],
    "needs": [],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [
     ".base1",
     ".base2",

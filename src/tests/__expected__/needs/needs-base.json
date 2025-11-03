@@ -15,6 +15,7 @@
    "rules": [],
    "needs": [],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 0,
@@ -29,6 +30,7 @@
    "missingNeeds": [],
    "extends": [],
    "missingExtends": [],
+   "postNeeds": [],
    "needGroup": 1,
    "includePath": "needs-base.yml"
   },
@@ -41,6 +43,7 @@
    "missingNeeds": [],
    "extends": [],
    "missingExtends": [],
+   "postNeeds": [],
    "needGroup": 2,
    "includePath": "needs-base.yml"
   }

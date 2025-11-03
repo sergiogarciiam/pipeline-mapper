@@ -163,6 +163,7 @@ export class PipelineProcessor {
       );
 
       merged = this.mergePipelines(merged, expandedInclude);
+      stack.delete(resolved);
     }
 
     return merged;
@@ -203,10 +204,10 @@ export class PipelineProcessor {
 
   private mergePipelines(base: PipelineData, included: PipelineData): PipelineData {
     return {
-      ...base,
       ...included,
-      jobs: { ...base.jobs, ...included.jobs },
-      stages: [...new Set([...(base.stages || []), ...(included.stages || [])])],
+      ...base,
+      jobs: { ...included.jobs, ...base.jobs },
+      stages: base.stages?.length ? base.stages : included.stages,
       hiddenJobs: [...new Set([...(base.hiddenJobs || []), ...(included.hiddenJobs || [])])],
       include: [...new Set([...(base.include || []), ...(included.include || [])])],
       missingIncludes: [

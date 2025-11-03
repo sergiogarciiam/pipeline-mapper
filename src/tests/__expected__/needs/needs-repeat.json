@@ -15,6 +15,7 @@
    "rules": [],
    "needs": [],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 0,
@@ -27,6 +28,7 @@
     "build"
    ],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 1,
@@ -39,6 +41,7 @@
     "build"
    ],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 1,
@@ -53,6 +56,7 @@
     "test2"
    ],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [],
    "missingExtends": [],
    "needGroup": 2,

@@ -1,14 +1,40 @@
 {
  "stages": [
+  "prepare",
   "build",
-  "test"
+  "test1",
+  "test2"
  ],
  "needsGroups": [
-  0
+  0,
+  1,
+  2
  ],
  "jobs": {
-  "job1": {
-   "stage": "test",
+  "prepare": {
+   "stage": "prepare",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "postNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "extends-multi.yml"
+  },
+  "build": {
+   "stage": "build",
+   "rules": [],
+   "needs": [],
+   "missingNeeds": [],
+   "postNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "extends-multi.yml"
+  },
+  "test1": {
+   "stage": "test2",
    "rules": [
     {
      "type": "if",
@@ -16,14 +42,38 @@
      "when": "always"
     }
    ],
-   "needs": [],
+   "needs": [
+    "prepare"
+   ],
    "missingNeeds": [],
+   "postNeeds": [],
    "extends": [
     ".base1",
     ".base2"
    ],
    "missingExtends": [],
-   "needGroup": 0,
+   "needGroup": 1,
+   "includePath": "extends-multi.yml"
+  },
+  "test2": {
+   "stage": "test2",
+   "rules": [
+    {
+     "type": "if",
+     "value": "$CI_COMMIT_REF_NAME == \"main\"",
+     "when": "on_success"
+    }
+   ],
+   "needs": [
+    "test1"
+   ],
+   "missingNeeds": [],
+   "postNeeds": [],
+   "extends": [
+    ".base1"
+   ],
+   "missingExtends": [],
+   "needGroup": 2,
    "includePath": "extends-multi.yml"
   }
  },
