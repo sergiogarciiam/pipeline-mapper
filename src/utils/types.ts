@@ -1,6 +1,8 @@
 export interface Rule {
-  type: 'if' | 'exists' | 'changes' | 'unknown' | 'default';
-  value?: string;
+  type: 'if' | 'exists' | 'changes' | 'unknown' | 'default' | 'error';
+  variable?: string;
+  expression?: string | undefined;
+  value?: string | undefined;
   when: string;
 }
 

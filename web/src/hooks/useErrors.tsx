@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Job, PipelineData } from '../utils/types';
+import { ERROR_IF_TYPE_RULE } from '../utils/constants';
 
 export function useErrors(pipelineData: PipelineData, selectedJobId: string | null) {
   const [errors, setErrors] = useState<string[]>([]);
@@ -29,8 +30,14 @@ export function useErrors(pipelineData: PipelineData, selectedJobId: string | nu
 }
 
 function collectJobErrors(pipelineData: PipelineData, job: Job, jobName: string, errors: string[]) {
+  const errorRules = job.rules.filter((rule) => rule.type === ERROR_IF_TYPE_RULE);
+
   if (job.stage && !pipelineData.stages.includes(job.stage)) {
     errors.push(`Job "${jobName}" has undefined stage "${job.stage}"`);
+  }
+
+  if (errorRules.length !== 0) {
+    errors.push(`Job "${jobName}" contains invalid or incorrectly formatted rules.`);
   }
 
   appendArrayErrors({

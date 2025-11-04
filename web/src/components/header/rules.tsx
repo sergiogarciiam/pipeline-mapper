@@ -2,6 +2,7 @@ import { useEffect, type Dispatch, type SetStateAction } from 'react';
 import type { SelectedRule } from '../../utils/types';
 import { DEFAULT_RULE } from '../../utils/constants';
 import RuleForm from './ruleForm';
+import { v4 as uuidv4 } from 'uuid';
 
 interface RulesProps {
   selectedRules: SelectedRule[];
@@ -15,7 +16,7 @@ const Rules = ({ selectedRules, setSelectedRules, setSelectedJobId }: RulesProps
   }, [selectedRules, setSelectedJobId]);
 
   const handleAddRule = () => {
-    setSelectedRules((prev) => [...prev, DEFAULT_RULE]);
+    setSelectedRules((prev) => [...prev, { ...DEFAULT_RULE, id: uuidv4() }]);
   };
 
   const handleRemoveRule = (index: number) => {
@@ -38,7 +39,7 @@ const Rules = ({ selectedRules, setSelectedRules, setSelectedJobId }: RulesProps
       {selectedRules.length !== 0 &&
         selectedRules.map((rule, index) => (
           <RuleForm
-            key={index}
+            key={rule.id}
             newSelectedRule={rule}
             setNewSelectedRule={(updatedRule) => handleUpdateRule(index, updatedRule)}
             handleRemoveRule={() => handleRemoveRule(index)}

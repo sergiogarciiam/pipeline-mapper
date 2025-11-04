@@ -1,7 +1,9 @@
 export type Rule =
   | {
       type: 'if';
-      value: string;
+      variable: string;
+      expression: string | undefined;
+      value: string | undefined;
       when: string;
     }
   | {
@@ -22,13 +24,18 @@ export type Rule =
   | {
       type: 'default';
       when: string;
+    }
+  | {
+      type: 'error';
+      when: string;
     };
 
 export interface SelectedRule {
   type: string;
   variable: string;
-  expression: string;
-  value: string;
+  expression: string | undefined;
+  value: string | undefined;
+  id?: string;
 }
 
 export interface Job {

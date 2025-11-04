@@ -1,6 +1,7 @@
 import { forwardRef, type Dispatch, type SetStateAction } from 'react';
 import type { Job } from '../../utils/types';
 import { DangerIcon } from '../../utils/icons';
+import { ERROR_IF_TYPE_RULE } from '../../utils/constants';
 
 interface JobNodeProps {
   jobId: string;
@@ -16,11 +17,19 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
     const hasmissingNeeds = jobData.missingNeeds && jobData.missingNeeds.length > 0;
     const hasPostNeeds = jobData.postNeeds && jobData.postNeeds.length > 0;
     const hasNeedsErrors = jobData.needsErrors && jobData.needsErrors.length > 0;
+    const hasRuleErrors =
+      jobData.rules.filter((rule) => rule.type === ERROR_IF_TYPE_RULE).length !== 0;
 
     const isSelected = selectedJobId === jobId;
     const isBlurred =
       (selectedJobId && selectedJobId !== jobId) ||
       (!selectedJobId && hoveredJobId && hoveredJobId !== jobId);
+
+    const hasErrors = () => {
+      return (
+        hasmissingNeeds || hasmissingExtends || hasNeedsErrors || hasPostNeeds || hasRuleErrors
+      );
+    };
 
     const handleClick = () => {
       setSelectedJobId(isSelected ? null : jobId);
@@ -41,9 +50,7 @@ const JobNode = forwardRef<HTMLDivElement, JobNodeProps>(
       >
         <div className="flex items-center gap-2">
           {jobId}
-          {(hasmissingNeeds || hasmissingExtends || hasNeedsErrors || hasPostNeeds) && (
-            <DangerIcon />
-          )}
+          {hasErrors() && <DangerIcon />}
         </div>
       </div>
     );

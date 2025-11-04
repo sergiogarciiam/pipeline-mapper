@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { PipelineData, SelectedRule, Job } from '../utils/types';
 import {
-  CHANGES_RULE_TYPE,
-  DEFAULT_RULE_TYPE,
-  EXISTS_RULE_TYPE,
-  IF_RULE_TYPE,
+  CHANGES_TYPE_RULE,
+  DEFAULT_TYPE_RULE,
+  EXISTS_TYPE_RULE,
+  IF_TYPE_RULE,
   NEVER_WHEN,
 } from '../utils/constants';
 
@@ -23,23 +23,45 @@ export function usePipeline(pipelineData: PipelineData | undefined, selectedRule
         return true;
       }
 
-      for (const selectedRule of selectedRules) {
-        for (const rule of job.rules) {
-          if (rule.when === NEVER_WHEN) {
-            return false;
-          }
-          if (rule.type === DEFAULT_RULE_TYPE) {
-            return true;
-          } else if (rule.type === IF_RULE_TYPE) {
-            const expectedValue = `${selectedRule.variable} ${selectedRule.expression} ${selectedRule.value}`;
-            if (rule.value === expectedValue) {
+      if (job.rules.some((rule) => rule.when === NEVER_WHEN)) {
+        return false;
+      }
+
+      for (const rule of job.rules) {
+        if (rule.when === NEVER_WHEN) {
+          return false;
+        }
+        if (rule.type === DEFAULT_TYPE_RULE) {
+          return true;
+        }
+
+        for (const selectedRule of selectedRules) {
+          if (rule.type === IF_TYPE_RULE) {
+            if (
+              !rule.expression &&
+              !rule.value &&
+              selectedRule.variable &&
+              selectedRule.variable === rule.variable
+            ) {
               return true;
             }
-          } else if (
-            (rule.type === EXISTS_RULE_TYPE || rule.type === CHANGES_RULE_TYPE) &&
-            rule.value === selectedRule.value
-          ) {
-            return true;
+
+            if (
+              selectedRule.variable &&
+              selectedRule.expression &&
+              selectedRule.value &&
+              rule.variable === selectedRule.variable &&
+              rule.expression === selectedRule.expression &&
+              rule.value === selectedRule.value
+            ) {
+              return true;
+            }
+          }
+
+          if ((rule.type === CHANGES_TYPE_RULE || rule.type === EXISTS_TYPE_RULE) && rule.value) {
+            if (rule.value === selectedRule.value) {
+              return true;
+            }
           }
         }
       }
