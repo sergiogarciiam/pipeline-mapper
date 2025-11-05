@@ -10,13 +10,17 @@
    "stage": "test",
    "rules": [
     {
+     "expression": "==",
      "type": "if",
-     "value": "$CI_COMMIT_BRANCH == \"main\"",
+     "value": "\"main\"",
+     "variable": "$CI_COMMIT_BRANCH",
      "when": "always"
     },
     {
+     "expression": "==",
      "type": "if",
-     "value": "$CI_COMMIT_BRANCH == \"master\"",
+     "value": "\"master\"",
+     "variable": "$CI_COMMIT_BRANCH",
      "when": "always"
     },
     {

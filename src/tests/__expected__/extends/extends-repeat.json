@@ -11,8 +11,10 @@
    "stage": "test",
    "rules": [
     {
+     "expression": "==",
      "type": "if",
-     "value": "$CI_COMMIT_REF_NAME == \"dev\"",
+     "variable": "$CI_COMMIT_REF_NAME",
+     "value": "\"dev\"",
      "when": "always"
     }
    ],

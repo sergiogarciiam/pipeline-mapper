@@ -57,8 +57,10 @@
    "stage": "deploy",
    "rules": [
     {
+     "expression": "==",
      "type": "if",
-     "value": "$CI_PIPELINE_SOURCE == \"push\"",
+     "value": "\"push\"",
+     "variable": "$CI_PIPELINE_SOURCE",
      "when": "on_success"
     }
    ],

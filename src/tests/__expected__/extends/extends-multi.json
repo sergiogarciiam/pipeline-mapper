@@ -37,8 +37,10 @@
    "stage": "test2",
    "rules": [
     {
+     "expression": "==",
      "type": "if",
-     "value": "$CI_COMMIT_REF_NAME == \"dev\"",
+     "variable": "$CI_COMMIT_REF_NAME",
+     "value": "\"dev\"",
      "when": "always"
     }
    ],
@@ -59,8 +61,10 @@
    "stage": "test2",
    "rules": [
     {
+     "expression": "==",
      "type": "if",
-     "value": "$CI_COMMIT_REF_NAME == \"main\"",
+     "value": "\"main\"",
+     "variable": "$CI_COMMIT_REF_NAME",
      "when": "on_success"
     }
    ],

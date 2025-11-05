@@ -33,7 +33,7 @@ const testGroups: TestGroup[] = [
   {
     name: 'Rules Testing',
     dir: 'rules',
-    cases: ['rules-base', 'rules-multi'],
+    cases: ['rules-base', 'rules-multi', 'rules-errors'],
   },
 ];
 

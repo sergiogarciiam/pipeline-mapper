@@ -24,8 +24,10 @@
    "stage": "build",
    "rules": [
     {
+     "expression": "==",
      "type": "if",
-     "value": "$CI_COMMIT_BRANCH == \"main\"",
+     "value": "\"main\"",
+     "variable": "$CI_COMMIT_BRANCH",
      "when": "on_success"
     }
    ],
@@ -63,8 +65,10 @@
    "stage": "test",
    "rules": [
     {
+     "expression": "==",
      "type": "if",
-     "value": "$CI_COMMIT_BRANCH == \"main\"",
+     "value": "\"main\"",
+     "variable": "$CI_COMMIT_BRANCH",
      "when": "never"
     }
    ],

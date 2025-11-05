@@ -1,0 +1,45 @@
+{
+ "stages": [
+  "test"
+ ],
+ "needsGroups": [
+  0
+ ],
+ "jobs": {
+  "test": {
+   "stage": "test",
+   "rules": [
+    {
+     "type": "error",
+     "value": "CI_COMMIT_BRANCH == \"main\"",
+     "when": "on_success"
+    },
+    {
+     "type": "error",
+     "value": "$CI_COMMIT_BRANCH \"main\"",
+     "when": "on_success"
+    },
+    {
+     "type": "error",
+     "value": "$CI_COMMIT_BRANCH ==",
+     "when": "on_success"
+    },
+    {
+     "type": "error",
+     "value": "$CI_COMMIT_BRANCH =1 \"main\"",
+     "when": "on_success"
+    }
+   ],
+   "needs": [],
+   "missingNeeds": [],
+   "postNeeds": [],
+   "extends": [],
+   "missingExtends": [],
+   "needGroup": 0,
+   "includePath": "rules-errors.yml"
+  }
+ },
+ "hiddenJobs": [],
+ "include": [],
+ "missingIncludes": []
+}
