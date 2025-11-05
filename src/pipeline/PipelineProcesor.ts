@@ -1,7 +1,7 @@
 import { promises as fsPromises } from 'fs';
 import * as path from 'path';
 import * as YAML from 'yaml';
-import type { IncludeItem, Job, PipelineData } from '../utils/types';
+import type { IncludeItem, Job, PipelineData, RawJob, RawPipeline } from '../utils/types';
 import { RuleNormalizer } from './RuleNormalizer';
 
 export class PipelineProcessor {
@@ -47,7 +47,7 @@ export class PipelineProcessor {
   // #endregion
 
   // #region STEP 1: Extract initial pipeline data
-  private parseInitialPipeline(rawPipeline: PipelineData, includePath: string) {
+  private parseInitialPipeline(rawPipeline: RawPipeline, includePath: string) {
     const stages = rawPipeline.stages || [];
     this.pipelineStages = stages;
     const needsGroups: number[] = [];
@@ -85,7 +85,7 @@ export class PipelineProcessor {
 
   private buildJobFromRaw(
     jobName: string,
-    rawPipeline: Record<string, any>,
+    rawPipeline: RawPipeline,
     includePath: string,
     resolvedJobs: Record<string, Job> = {},
   ): Job | null {
@@ -93,18 +93,18 @@ export class PipelineProcessor {
       return resolvedJobs[jobName];
     }
 
-    const rawJob = rawPipeline[jobName];
+    const rawJob = rawPipeline[jobName] as RawJob;
     if (!rawJob || typeof rawJob !== 'object') {
       return null;
     }
 
     const processedJob: Job = {
       stage: rawJob.stage,
-      rules: this.ruleNormalizer.normalize(rawJob.rules),
-      needs: rawJob.needs ? [].concat(rawJob.needs) : [],
+      rules: this.ruleNormalizer.normalize(rawJob.rules ?? []),
+      needs: rawJob.needs ? ([] as string[]).concat(rawJob.needs) : [],
       missingNeeds: [],
       postNeeds: [],
-      extends: rawJob.extends ? [].concat(rawJob.extends) : [],
+      extends: rawJob.extends ? ([] as string[]).concat(rawJob.extends) : [],
       missingExtends: [],
       needGroup: null,
       includePath,

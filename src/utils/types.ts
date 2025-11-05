@@ -55,3 +55,24 @@ export interface PipelineData {
   include: IncludeItem[];
   missingIncludes: IncludeItem[];
 }
+
+export interface RawRule {
+  if?: string;
+  exists?: string | string[];
+  changes?: string | string[];
+  when?: string;
+}
+
+export interface RawJob {
+  stage?: string;
+  rules?: RawRule[];
+  needs?: string | string[];
+  extends?: string | string[];
+  [key: string]: unknown;
+}
+
+export type RawPipeline = Record<string, unknown> & {
+  stages?: string[];
+  include?: IncludeItem[];
+  [key: string]: unknown;
+};
