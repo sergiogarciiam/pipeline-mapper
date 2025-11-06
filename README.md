@@ -1,71 +1,66 @@
-# pipeline-mapper README
+# Pipeline Mapper
 
-This is the README for your extension "pipeline-mapper". After writing up a brief description, we recommend including the following sections.
+Visualize **GitLab CI/CD pipeline YAML files locally**, without pushing your changes.
+
+> ⚠️ **Disclaimer:** This is an independent, community-developed VS Code extension and is **not affiliated with, endorsed by, or officially supported by GitLab Inc**. For production pipelines, always validate using the official GitLab CI/CD system.
+
+## Quick Usage
+
+1. Open a `.yml` or `.yaml` file in VS Code.
+2. Type `Ctrl + Shift + P`
+3. Type `Generate Pipeline Mapper`
+
+> The extension only works with valid GitLab CI/CD YAML files (.gitlab-ci.yml or included files).
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- Automatic stage mapping for visual representation of jobs by stage.
+- Show basic information of jobs.
+- Show dependencies of jobs (individually or all).
+- Automatic dependency grouping (`needGroup`) for visual mapping.
+- Recursive `include` support with cycle detection.
+- Recursive `extends` resolution with inheritance merging.
+- `needs` resolution with cycle and post-stage validation.
+- Apply rules (`if`, `exists`, and `changes` supporting `||` logical OR) to see how change the pipelien flow.
+- Detailed error handling for invalid YAML, missing includes, extends, or needs.
+- Hidden job filtering (jobs starting with `.` are ignored).
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Jobs with **optional dependencies** may appear as errors.
+- Jobs with **tags** may inherit rules even when GitLab does not.
+- `rules` with logical AND (`&&`) or parentheses are not supported.
+- Currently only `if`, `exists`, and `changes` rules are currently handled.
 
-## Release Notes
+## Try the Code
 
-Users appreciate release notes as you update your extension.
+If you’d like to run or modify the extension locally:
 
-### 1.0.0
+### Run code
 
-Initial release of ...
+1. Clone this repo
+3. Install dependencies: `pnpm install`
+4. Start debugging in VS Code by pressing `F5`
+5. A new Extension Development Host window will open.
+6. Open a `.yml` file and run `Generate Pipeline Mapper` from the command palette.
 
-### 1.0.1
+### Make changes
 
-Fixed issue #.
+- **Frontend changes:** simply rerun `Generate Pipeline Mapper` to see updates.
+- **Backend changes:** press `Ctrl + R` in the Extension Host window to reload the extension.
 
-### 1.1.0
+### Run tests
 
-Added features X, Y, and Z.
+```bash
+pnpm run lint       # Check code style
+pnpm run test:only  # Run only tests
+pnpm run test       # Run linting + tests
+```
 
----
+## Changelog
 
-## Following extension guidelines
+See [CHANGELOG.md](./CHANGELOG.md) for release history.
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+## LICENSE
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+This extension is licensed under the [MIT License](LICENSE).

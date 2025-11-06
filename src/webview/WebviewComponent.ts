@@ -11,9 +11,13 @@ export class WebviewComponent {
   }
 
   public createPanel(title = 'Pipeline Mapper'): vscode.WebviewPanel {
-    return vscode.window.createWebviewPanel('pipelineMapper', title, vscode.ViewColumn.One, {
+    const panel = vscode.window.createWebviewPanel('pipelineMapper', title, vscode.ViewColumn.One, {
       enableScripts: true,
     });
+
+    panel.iconPath = vscode.Uri.joinPath(this.context.extensionUri, 'assets', 'icon.png');
+
+    return panel;
   }
 
   public async render(panel: vscode.WebviewPanel, data: PipelineData): Promise<void> {

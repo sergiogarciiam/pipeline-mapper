@@ -1,12 +1,15 @@
 {
   "name": "pipeline-mapper",
   "displayName": "Pipeline Mapper",
-  "description": "",
+  "description": "Visualize GitLab CI/CD pipeline YAML files locally, without pushing your changes.",
   "version": "0.0.1",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "icon": "assests/icon.png",
   "engines": {
     "vscode": "^1.103.0"
   },
   "categories": [
+    "Visualization",
     "Other"
   ],
   "activationEvents": [],
@@ -26,15 +29,17 @@
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
     "watch:web": "cd web && pnpm run watch",
-    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+    "package": "pnpm run check-types && pnpm run lint:back && node esbuild.js --production",
+    "check-types": "tsc --noEmit",
+    "lint:back": "eslint src",
+    "lint:web": "cd web && pnpm run lint",
+    "lint": "eslint src && cd web && pnpm run lint",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint && pnpm run lint:web",
-    "check-types": "tsc --noEmit",
-    "lint": "eslint src",
-    "lint:web": "cd web && pnpm run lint",
-    "test:vscode": "vscode-test",
-    "test": "mocha -r ts-node/register ./src/tests/**/*.test.ts"
+    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint:back && pnpm run lint:web",
+    "test:only": "mocha -r ts-node/register ./src/tests/**/*.test.ts",
+    "test": "mocha -r ts-node/register ./src/tests/**/*.test.ts",
+    "test:vscode": "vscode-test"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
