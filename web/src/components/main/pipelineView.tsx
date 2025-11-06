@@ -15,7 +15,7 @@ interface PipelineViewProps {
   viewMode: ViewMode;
 }
 
-export function PipelineView({
+const PipelineView = ({
   pipelineData,
   jobRefs,
   selectedJobId,
@@ -24,7 +24,7 @@ export function PipelineView({
   setHoveredJobId,
   arrows,
   viewMode,
-}: PipelineViewProps) {
+}: PipelineViewProps) => {
   const columns: (string | number)[] =
     viewMode === STAGES_VAR ? [...pipelineData.stages] : [...pipelineData.needsGroups];
 
@@ -54,4 +54,6 @@ export function PipelineView({
       ))}
     </main>
   );
-}
+};
+
+export default PipelineView;

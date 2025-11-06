@@ -1,6 +1,6 @@
 import { forwardRef, type Dispatch, type SetStateAction } from 'react';
 import type { Job } from '../../utils/types';
-import { DangerIcon } from '../../utils/icons';
+import { DangerIcon } from '../other/icons';
 import { ERROR_IF_TYPE_RULE } from '../../utils/constants';
 
 interface JobNodeProps {

@@ -15,7 +15,7 @@ const DependenciesButton = ({
         checked={isShowAllDependencies}
         onChange={() => setIsShowAllDependencies(!isShowAllDependencies)}
       />
-      Show Dependencies
+      Show all dependencies
     </label>
   );
 };

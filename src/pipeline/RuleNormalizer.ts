@@ -4,6 +4,7 @@ import { IfRuleStrategy } from './rules/IfRuleStrategy';
 import { ExistsRuleStrategy } from './rules/ExistsRuleStrategy';
 import { ChangesRuleStrategy } from './rules/ChangesRuleStrategy';
 import { WhenRuleStrategy } from './rules/WhenRuleStrategy';
+import { DEFAULT_WHEN, UNKNOWN_TYPE_RULE } from '../utils/constants';
 
 export class RuleNormalizer {
   private strategies: RuleStrategy[] = [
@@ -24,7 +25,7 @@ export class RuleNormalizer {
       if (strategy) {
         result.push(...strategy.normalize(rule));
       } else {
-        result.push({ type: 'unknown', when: rule.when || 'on_success' });
+        result.push({ type: UNKNOWN_TYPE_RULE, when: rule.when || DEFAULT_WHEN });
       }
     }
 

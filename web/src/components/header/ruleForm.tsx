@@ -5,7 +5,7 @@ import {
   RULES_TYPES,
   IF_RULES_VARIABLES,
 } from '../../utils/constants';
-import { TrashIcon } from '../../utils/icons';
+import { TrashIcon } from '../other/icons';
 
 interface RuleFormProps {
   newSelectedRule: SelectedRule;

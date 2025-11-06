@@ -8,7 +8,7 @@ type TestGroup = {
   dir: string;
   cases: string[];
   skip?: boolean;
-  cycleFile?: string;
+  errorCases?: string[];
 };
 
 const testGroups: TestGroup[] = [
@@ -16,19 +16,19 @@ const testGroups: TestGroup[] = [
     name: 'Extends Testing',
     dir: 'extends',
     cases: ['extends-base', 'extends-missing', 'extends-multi', 'extends-repeat'],
-    cycleFile: 'extends-cycle.yml',
+    errorCases: ['extends-cycle.yml'],
   },
   {
     name: 'Needs Testing',
     dir: 'needs',
     cases: ['needs-base', 'needs-missing', 'needs-multi', 'needs-repeat'],
-    cycleFile: 'needs-cycle.yml',
+    errorCases: ['needs-cycle.yml'],
   },
   {
     name: 'Includes Testing',
     dir: 'includes',
-    cases: ['includes-base', 'includes-missing', 'includes-multi', 'includes-repeat'],
-    cycleFile: 'includes-cycle.yml',
+    cases: ['includes-base', 'includes-multi', 'includes-repeat'],
+    errorCases: ['includes-cycle.yml', 'includes-missing'],
   },
   {
     name: 'Rules Testing',
@@ -53,12 +53,13 @@ for (const group of testGroups) {
         assert.deepStrictEqual(result, expected, `Mismatch in ${testCase}`);
       });
     }
-
-    it(`should throw error for ${group.cycleFile}`, async () => {
-      if (group.cycleFile) {
-        const filePath = path.join(fixturesDir, group.cycleFile);
-        await assert.rejects(() => processor.process(filePath), /cyclic/i);
+    if (group.errorCases) {
+      for (const errorCase of group.errorCases) {
+        it(`should throw error for ${errorCase}`, async () => {
+          const filePath = path.join(fixturesDir, errorCase);
+          await assert.rejects(() => processor.process(filePath));
+        });
       }
-    });
+    }
   });
 }

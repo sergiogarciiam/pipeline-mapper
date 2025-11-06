@@ -4,8 +4,8 @@ import { type PipelineData, type SelectedRule, type ViewMode } from './utils/typ
 import { usePipelineArrows } from './hooks/usePipelineArrows';
 import { usePipeline } from './hooks/usePipeline';
 import { STAGES_VAR } from './utils/constants';
+import PipelineView from './components/main/pipelineView';
 import Footer from './components/footer/footer';
-import { PipelineView } from './components/main/pipelineView';
 
 function App() {
   const pipelineData = (window as { pipelineData?: PipelineData }).pipelineData;

@@ -20,7 +20,7 @@ export class PipelineProcessor {
     const content = await this.readFile(filePath);
     const raw = this.parseYamlSafe(content, filePath);
 
-    const initial = this.parseInitialPipeline(raw, rootName);
+    const initial = this.parseRawPipeline(raw, rootName);
 
     const withIncludes = await this.resolveIncludes(initial, path.dirname(filePath));
     const withExtends = this.resolveExtendsForAllJobs(withIncludes);
@@ -46,8 +46,8 @@ export class PipelineProcessor {
   }
   // #endregion
 
-  // #region STEP 1: Extract initial pipeline data
-  private parseInitialPipeline(rawPipeline: RawPipeline, includePath: string) {
+  // #region STEP 1: Parse raw pipeline
+  private parseRawPipeline(rawPipeline: RawPipeline, includePath: string) {
     const stages = rawPipeline.stages || [];
     this.pipelineStages = stages;
     const needsGroups: number[] = [];
@@ -154,7 +154,7 @@ export class PipelineProcessor {
 
       const content = await this.readFile(resolved);
       const raw = this.parseYamlSafe(content, resolved);
-      const includedData = this.parseInitialPipeline(raw, includePath);
+      const includedData = this.parseRawPipeline(raw, includePath);
       const expandedInclude = await this.resolveIncludes(
         includedData,
         path.dirname(resolved),
@@ -179,12 +179,17 @@ export class PipelineProcessor {
     }
 
     if (localPath && localPath.match(/^(\.\/|\.\.)/)) {
-      return undefined;
+      throw new Error(
+        `Invalid include: Local file '${localPath}'. Relative paths (./ or ../) are not allowed.`,
+      );
+    }
+
+    if (localPath && !localPath.match(/\.(ya?ml)$/i)) {
+      throw new Error(`Invalid include: '${localPath}'. Expected a .yml or .yaml file.`);
     }
 
     return localPath;
   }
-
   private resolvePath(baseDir: string, includePath: string) {
     if (includePath.startsWith('/')) {
       return path.resolve(baseDir, `./${includePath}`);
