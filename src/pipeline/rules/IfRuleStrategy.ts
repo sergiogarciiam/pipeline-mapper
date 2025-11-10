@@ -22,7 +22,9 @@ export class IfRuleStrategy implements RuleStrategy {
     const ifRules = rule.if.split('||');
     return ifRules.map((c: string) => {
       const trimmed = c.trim();
-      const match = trimmed.match(/^\s*(\$\w+)\s*(==|!=|=~|!~|>=|<=|>|<)?\s*(.*)?$/);
+      const match = trimmed.match(
+        /^\s*(\$?\w+|["'][^"']+["'])\s*(==|!=|=~|!~|>=|<=|>|<)?\s*(.*)?$/,
+      );
 
       if (!match) {
         return { type: ERROR_IF_TYPE_RULE, value: trimmed, when };
