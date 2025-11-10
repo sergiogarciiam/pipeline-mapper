@@ -4,13 +4,15 @@ Visualize **GitLab CI/CD pipeline YAML files locally**, without pushing your cha
 
 > ⚠️ **Disclaimer:** This is an independent, community-developed VS Code extension and is **not affiliated with, endorsed by, or officially supported by GitLab Inc**. For production pipelines, always validate using the official GitLab CI/CD system.
 
+![demo](./assets/demo.gif)
+
 ## Quick Usage
 
 1. Open a `.yml` or `.yaml` file in VS Code.
-2. Type `Ctrl + Shift + P`
-3. Type `Generate Pipeline Mapper`
+2. Open the Command Palette: `Ctrl + Shift + P` (Cmd on macOS).
+3. Run: `Generate Pipeline Mapper`
 
-> The extension only works with valid GitLab CI/CD YAML files (.gitlab-ci.yml or included files).
+> Works only with valid GitLab CI/CD YAML files.
 
 ## Features
 
@@ -21,16 +23,16 @@ Visualize **GitLab CI/CD pipeline YAML files locally**, without pushing your cha
 - Recursive `include` support with cycle detection.
 - Recursive `extends` resolution with inheritance merging.
 - `needs` resolution with cycle and post-stage validation.
-- Apply rules (`if`, `exists`, and `changes` supporting `||` logical OR) to see how change the pipelien flow.
+- Apply rules (`if`, `exists`, and `changes` supporting `||` logical OR) to see how change the pipeline flow.
 - Detailed error handling for invalid YAML, missing includes, extends, or needs.
 - Hidden job filtering (jobs starting with `.` are ignored).
 
 ## Known Issues
 
+- YAML anchors (`&`, `*`) are not supported.
+- Remote includes (`include: remote:`) are not supported.
 - Jobs with **optional dependencies** may appear as errors.
-- Jobs with **tags** may inherit rules even when GitLab does not.
-- `rules` with logical AND (`&&`) or parentheses are not supported.
-- Currently only `if`, `exists`, and `changes` rules are currently handled.
+- `rules` with logical AND (`&&`), negation (`!`), or parentheses are not supported.
 
 ## Try the Code
 
@@ -38,29 +40,26 @@ If you’d like to run or modify the extension locally:
 
 ### Run code
 
-1. Clone this repo
-3. Install dependencies: `pnpm install`
-4. Start debugging in VS Code by pressing `F5`
-5. A new Extension Development Host window will open.
-6. Open a `.yml` file and run `Generate Pipeline Mapper` from the command palette.
+1. Clone this repository
+2. Install dependencies: `pnpm install`
+3. Start debugging in VS Code (`F5`) → a new Extension Development Host will open.
+4. Open a `.yml` file and run `Generate Pipeline Mapper` from the Command Palette.
 
 ### Make changes
 
-- **Frontend changes:** simply rerun `Generate Pipeline Mapper` to see updates.
-- **Backend changes:** press `Ctrl + R` in the Extension Host window to reload the extension.
+- **Frontend changes:** Rerun `Generate Pipeline Mapper`.
+- **Backend changes:** Press `Ctrl + R` in the Extension Host to reload.
 
 ### Run tests
 
-```bash
-pnpm run lint       # Check code style
-pnpm run test:only  # Run only tests
-pnpm run test       # Run linting + tests
-```
+- Run `pnpm run lint` to check code style.
+- Run `pnpm run test:only` to run only tests.
+- Run `pnpm run test` to run linting and tests.     
 
 ## Changelog
 
 See [CHANGELOG.md](./CHANGELOG.md) for release history.
 
-## LICENSE
+## License
 
 This extension is licensed under the [MIT License](LICENSE).
