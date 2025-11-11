@@ -6,6 +6,12 @@ Visualize **GitLab CI/CD pipeline YAML files locally**, without pushing your cha
 
 ![demo](./assets/demo.gif)
 
+## Installation
+
+1. Launch VS Code.
+2. Quick Open (`Ctrl+P`).
+3. Paste the command `ext install sergiogarciiam.pipeline-mapper` and press enter.
+
 ## Quick Usage
 
 1. Open a `.yml` or `.yaml` file in VS Code.
@@ -41,7 +47,7 @@ If you’d like to run or modify the extension locally:
 ### Run code
 
 1. Clone this repository.
-2. Install dependencies: `pnpm install`.
+2. Install dependencies: `npm install`.
 3. Start debugging in VS Code (`F5`) → a new Extension Development Host will open.
 4. Open a `.yml` file and run `Generate Pipeline Mapper` from the Command Palette.
 
@@ -52,9 +58,9 @@ If you’d like to run or modify the extension locally:
 
 ### Run tests
 
-- Run `pnpm run lint` to check code style.
-- Run `pnpm run test:only` to run only tests.
-- Run `pnpm run test` to run linting and tests.     
+- Run `npm run lint` to check code style.
+- Run `npm run test:only` to run only tests.
+- Run `npm run test` to run linting and tests.     
 
 ## Changelog
 
@@ -62,4 +68,4 @@ See [CHANGELOG.md](./CHANGELOG.md) for release history.
 
 ## License
 
-This extension is licensed under the [MIT License](LICENSE).
+This extension is licensed under the [MIT License](./LICENSE.md).
