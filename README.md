@@ -9,21 +9,21 @@ Visualize **GitLab CI/CD pipeline YAML files locally**, without pushing your cha
 ## Quick Usage
 
 1. Open a `.yml` or `.yaml` file in VS Code.
-2. Open the Command Palette: `Ctrl + Shift + P` (Cmd on macOS).
-3. Run: `Generate Pipeline Mapper`
+2. Open the Command Palette: `Ctrl + Shift + P` or `Cmd + Shift + P`.
+3. Run: `Generate Pipeline Mapper`.
 
 > Works only with valid GitLab CI/CD YAML files.
 
 ## Features
 
 - Automatic stage mapping for visual representation of jobs by stage.
-- Show basic information of jobs.
+- Show basic information about jobs.
 - Show dependencies of jobs (individually or all).
 - Automatic dependency grouping (`needGroup`) for visual mapping.
 - Recursive `include` support with cycle detection.
 - Recursive `extends` resolution with inheritance merging.
 - `needs` resolution with cycle and post-stage validation.
-- Apply rules (`if`, `exists`, and `changes` supporting `||` logical OR) to see how change the pipeline flow.
+- Apply rules (`if`, `exists`, and `changes` supporting `||` logical OR) to see how the pipeline flow changes.
 - Detailed error handling for invalid YAML, missing includes, extends, or needs.
 - Hidden job filtering (jobs starting with `.` are ignored).
 
@@ -40,8 +40,8 @@ If you’d like to run or modify the extension locally:
 
 ### Run code
 
-1. Clone this repository
-2. Install dependencies: `pnpm install`
+1. Clone this repository.
+2. Install dependencies: `pnpm install`.
 3. Start debugging in VS Code (`F5`) → a new Extension Development Host will open.
 4. Open a `.yml` file and run `Generate Pipeline Mapper` from the Command Palette.
 
