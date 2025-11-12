@@ -16,7 +16,7 @@ interface RuleFormProps {
 const RuleForm = ({ newSelectedRule, setNewSelectedRule, handleRemoveRule }: RuleFormProps) => {
   const isCustomVariable = !IF_RULES_VARIABLES.includes(newSelectedRule.variable);
   return (
-    <form className="w-full flex justify-between !p-1 bg-[var(--mixed-bg-lighter)] rounded-sm">
+    <form className="w-fit flex justify-between !p-1 bg-[var(--mixed-bg-lighter)] rounded-sm gap-2">
       <div className="flex gap-2 h-fit">
         <select
           value={newSelectedRule.type}
