@@ -2,7 +2,7 @@
   "name": "pipeline-mapper",
   "displayName": "Pipeline Mapper",
   "description": "Visualize GitLab CI/CD pipeline YAML files locally, without pushing your changes.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "sergiogarciiam",
   "license": "SEE LICENSE IN LICENSE.md",
   "repository": {
