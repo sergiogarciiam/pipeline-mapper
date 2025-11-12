@@ -24,8 +24,8 @@ export const Header = ({
   setSelectedJobId,
 }: HeaderProps) => {
   return (
-    <header className="flex items-center justify-between bg-[var(--mixed-bg-darker)] !p-4">
-      <div className="flex flex-col self-start gap-4">
+    <header className="grid grid-cols-[auto_1fr] bg-[var(--mixed-bg-darker)] !p-4 gap-10 z-1">
+      <div className="flex flex-col self-start gap-4 w-fit">
         <ViewModeTab viewMode={viewMode} setViewMode={setViewMode}></ViewModeTab>
         <DependenciesButton
           isShowAllDependencies={isShowAllDependencies}
@@ -37,7 +37,7 @@ export const Header = ({
         selectedRules={selectedRules}
         setSelectedRules={setSelectedRules}
         setSelectedJobId={setSelectedJobId}
-      ></Rules>
+      />
     </header>
   );
 };

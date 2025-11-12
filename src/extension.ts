@@ -21,8 +21,13 @@ export function activate(context: vscode.ExtensionContext) {
         return vscode.window.showErrorMessage('This is not a YAML file (.yml or .yaml)');
       }
 
+      // Reveal the existing webview if it's still active; if the previous panel was disposed or failed, create a new one
       if (panel) {
-        panel.reveal(vscode.ViewColumn.One);
+        try {
+          panel.reveal(vscode.ViewColumn.One);
+        } catch {
+          panel = webview.createPanel();
+        }
       } else {
         panel = webview.createPanel();
       }

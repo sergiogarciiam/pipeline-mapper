@@ -29,22 +29,24 @@ const Rules = ({ selectedRules, setSelectedRules, setSelectedJobId }: RulesProps
   };
 
   return (
-    <div className="flex flex-col gap-4 h-[150px] w-2/5 overflow-y-auto relative p-2.5">
+    <div className="justify-self-end flex flex-col gap-2 h-[150px] min-w-[600px] max-w-full overflow-hidden relative p-2">
       <div className="sticky top-0 flex justify-between items-center bg-[var(--mixed-bg-darker)] !pb-2 rounded-sm">
         <h2>Rules</h2>
         <div className="flex gap-2">
           <button onClick={handleAddRule}>Add new rule</button>
         </div>
       </div>
-      {selectedRules.length !== 0 &&
-        selectedRules.map((rule, index) => (
-          <RuleForm
-            key={rule.id}
-            newSelectedRule={rule}
-            setNewSelectedRule={(updatedRule) => handleUpdateRule(index, updatedRule)}
-            handleRemoveRule={() => handleRemoveRule(index)}
-          />
-        ))}
+      <div className="flex flex-col gap-4 overflow-x-auto">
+        {selectedRules.length !== 0 &&
+          selectedRules.map((rule, index) => (
+            <RuleForm
+              key={rule.id}
+              newSelectedRule={rule}
+              setNewSelectedRule={(updatedRule) => handleUpdateRule(index, updatedRule)}
+              handleRemoveRule={() => handleRemoveRule(index)}
+            />
+          ))}
+      </div>
     </div>
   );
 };
