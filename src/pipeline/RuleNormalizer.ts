@@ -8,10 +8,10 @@ import { DEFAULT_WHEN, UNKNOWN_TYPE_RULE } from '../utils/constants';
 
 export class RuleNormalizer {
   private strategies: RuleStrategy[] = [
-    new WhenRuleStrategy(),
     new IfRuleStrategy(),
     new ExistsRuleStrategy(),
     new ChangesRuleStrategy(),
+    new WhenRuleStrategy(),
   ];
 
   normalize(rules: RawRule[]): Rule[] {

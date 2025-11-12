@@ -4,7 +4,6 @@ stages:
 test:
   stage: test
   rules:
-    - if: 'CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH "main"'
     - if: '$CI_COMMIT_BRANCH == '
     - if: '$CI_COMMIT_BRANCH =1 "main"'
